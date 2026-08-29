@@ -2,9 +2,11 @@
 """
 NC-Generator basierend auf spec_cnc.md
 Parst die Spezifikation und generiert alle NC-Dateien
+Formatiert automatisch am Ende
 """
 import math
 import re
+import glob
 from spec_parser import parse_spec_cnc, normalize_corner_radius
 
 # Konfiguration (geparst aus spec_cnc.md)
@@ -28,6 +30,50 @@ def format_float(value):
         else:
             return f"{rounded:.6f}".rstrip('0')  # Entferne trailing zeros aber behalte mindestens .0
     return str(value)
+
+def format_nc_file(filepath):
+    """Formatiert alle Zahlen in einer NC-Datei"""
+    with open(filepath, 'r') as f:
+        content = f.read()
+
+    # Regex für Zahlen nach G-Code-Befehlen: X, Y, Z, I, J, F, S
+    # Pattern: (X|Y|Z|I|J|F|S)(-?\d+\.?\d*)
+    def replace_number(match):
+        prefix = match.group(1)  # X, Y, Z, I, J, F, S
+        number_str = match.group(2)  # die Zahl als String
+        # F und S nicht formatieren (Feed und Spindle sind Ganzzahlen)
+        if prefix in ('F', 'S'):
+            return match.group(0)
+        # Konvertiere zu float, dann formatiere
+        try:
+            value = float(number_str)
+            formatted = format_float(value)
+            return f"{prefix}{formatted}"
+        except:
+            return match.group(0)
+
+    # Ersetze Zahlen nach G-Code-Präfixen
+    formatted = re.sub(r'([XYZIJF])(-?\d+\.?\d*)', replace_number, content)
+
+    with open(filepath, 'w') as f:
+        f.write(formatted)
+
+def format_all_nc_files():
+    """Formatiert alle .nc Dateien (ausser die mit a_ Präfix)"""
+    import os
+    current_dir = os.getcwd()
+    nc_files = glob.glob(os.path.join(current_dir, '*.nc'))
+
+    if not nc_files:
+        print(f"Keine NC-Dateien in {current_dir} gefunden")
+        return
+
+    for nc_file in nc_files:
+        basename = os.path.basename(nc_file)
+        if not basename.startswith('a_'):
+            print(f"Formatiere: {basename}")
+            format_nc_file(nc_file)
+    print(f"Formatierung abgeschlossen! ({len(nc_files)} Dateien gefunden)")
 
 # Programme aus spec_cnc.md parsen
 PROGRAMS = parse_spec_cnc('spec_cnc.md')
@@ -569,3 +615,7 @@ if __name__ == "__main__":
         generate_program(program_id, program_spec, CONFIG)
 
     print("\nAll NC files generated successfully!")
+
+    # Formatiere automatisch alle NC-Dateien
+    print("\nFormatting NC files...")
+    format_all_nc_files()

@@ -16,12 +16,11 @@ Dieses Projekt generiert automatisch G-Code für eine Messplatte (IR160-P) mit v
 ```
 spec_cnc.md                    # Spezifikation aller NC-Programme (Single Source of Truth)
 spec_parser.py                 # Gemeinsamer Parser für MD-Spezifikation
-generate_nc_from_spec.py       # NC-Generator (nutzt spec_parser)
+generate_nc_from_spec.py       # NC-Generator + Formatierung (nutzt spec_parser)
 generate_dxf_from_spec.py      # DXF-Generator (nutzt spec_parser)
-format_nc_files.py             # Formatierung für numerische Genauigkeit
 generate_all.ps1               # Orchestrierungsskript
 messplatte_160P.dxf            # DXF-Zeichnung (AutoCAD R12 Format)
-messplatte_160P.svg            # SVG-Export (aus DXF mit DXF-Plugin generiert)
+messplatte_160P.svg            # SVG-Export (optional, extern konvertiert mit DXF Plugin)
 ```
 
 ## Architektur
@@ -47,9 +46,9 @@ powershell -ExecutionPolicy Bypass -File generate_all.ps1
 ```
 
 Das Skript generiert:
-1. **NC-Dateien** aus `spec_cnc.md` (alle 9 NC-Programme)
+1. **NC-Dateien** aus `spec_cnc.md` (alle 10 NC-Programme)
 2. **DXF-Zeichnung** aus `spec_cnc.md` (Kreise, Labels, Mulden)
-3. Formatiert alle Zahlen konsistent (6 Dezimalstellen, mindestens 1 nach dem Komma)
+3. Formatiert automatisch alle Zahlen (6 Dezimalstellen, mindestens 1 nach dem Komma)
 4. Erhält alle Dateien mit `a_` Präfix (z.B. `a_go_home_position.nc`)
 
 ### Manuelle Schritte
@@ -63,15 +62,9 @@ Das Skript generiert:
 
 Dateien die mit `a_` beginnen (z.B. `a_go_home_position.nc`) werden von der Regenerierung ausgenommen und erhalten bleiben.
 
-### SVG-Export aus DXF
+### SVG-Export (optional)
 
-Die DXF-Datei wird mit einem DXF-zu-SVG-Plugin (z.B. Inkscape DXF-Import oder Online-Converter) in SVG konvertiert:
-
-```
-messplatte_160P.dxf  →[DXF Plugin]→  messplatte_160P.svg
-```
-
-Das SVG kann in Webanwendungen, CAD-Software oder zur Vorschau verwendet werden.
+Verwende das DXF Plugin im VS Code :-)
 
 ## NC-Program-Typen
 

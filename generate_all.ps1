@@ -8,11 +8,8 @@ Get-ChildItem -Filter "*.nc" -File | Where-Object { -not $_.Name.StartsWith("a_"
 # Lösche alte DXF-Dateien (nur messplatte_*.dxf, nicht andere)
 Remove-Item "messplatte_*.dxf" -Force -ErrorAction SilentlyContinue
 
-# Generiere NC-Dateien
+# Generiere und formatiere NC-Dateien (Formatierung ist eingebettet)
 python generate_nc_from_spec.py
-
-# Formatiere NC-Dateien
-python format_nc_files.py
 
 # Generiere DXF-Datei aus Spezifikation
 python generate_dxf_from_spec.py
