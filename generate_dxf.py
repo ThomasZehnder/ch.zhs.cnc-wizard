@@ -57,7 +57,8 @@ ENTITIES
 """)
 
     # Circles: 200mm, 160mm, 110mm, 50mm diameter
-    for diameter in [200.0, 160.0, 110.0, 50.0]:
+    circle_diameters = [200.0, 160.0, 110.0, 50.0]
+    for diameter in circle_diameters:
         radius = diameter / 2.0
         f.write(f"""  0
 CIRCLE
@@ -71,7 +72,30 @@ CIRCLE
 {radius}
 """)
 
-    # Boreholes as points: 4x at 45°/135°/225°/315°, distance 100mm and 50mm from center
+    # Label circles with diameter at 60°, 2mm from circle edge
+    for diameter in circle_diameters:
+        radius = diameter / 2.0
+        label_distance = radius + 2.0
+        angle_rad = math.radians(60.0)
+        x = label_distance * math.cos(angle_rad)
+        y = label_distance * math.sin(angle_rad)
+        f.write(f"""  0
+TEXT
+  8
+0
+ 10
+{x}
+ 20
+{y}
+ 40
+3.0
+  1
+{int(diameter)}mm
+""")
+
+
+    # Boreholes as circles (4mm diameter = 2mm radius): 4x at 45°/135°/225°/315°, distance 100mm and 50mm from center
+    hole_radius = 2.0
     hole_angles = [45.0, 135.0, 225.0, 315.0]
 
     for hole_distance in [100.0, 50.0]:
@@ -80,28 +104,28 @@ CIRCLE
             x = hole_distance * math.cos(angle_rad)
             y = hole_distance * math.sin(angle_rad)
             f.write(f"""  0
-POINT
+CIRCLE
   8
 0
  10
 {x}
  20
 {y}
- 30
-0.0
+ 40
+{hole_radius}
 """)
 
-    # Center borehole as point
+    # Center borehole (4mm diameter = 2mm radius)
     f.write(f"""  0
-POINT
+CIRCLE
   8
 0
  10
 0.0
  20
 0.0
- 30
-0.0
+ 40
+{hole_radius}
 """)
 
     radius_pos = 50.0
@@ -250,9 +274,28 @@ ARC
     for x, y in positions:
         create_rounded_square(x, y, 35.0, 10.0)
 
-    # Second set: 28x28mm, Radius 5mm
+    # Second set: 27x27mm, Radius 4mm
     for x, y in positions:
-        create_rounded_square(x, y, 28.0, 5.0)
+        create_rounded_square(x, y, 27.0, 4.0)
+
+    # Label drawing at 45°, 110mm from center
+    title_distance = 110.0
+    title_angle_rad = math.radians(45.0)
+    title_x = title_distance * math.cos(title_angle_rad)
+    title_y = title_distance * math.sin(title_angle_rad)
+    f.write(f"""  0
+TEXT
+  8
+0
+ 10
+{title_x}
+ 20
+{title_y}
+ 40
+5.0
+  1
+Messplatte IR160-P
+""")
 
     f.write("""  0
 ENDSEC
