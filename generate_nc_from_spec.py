@@ -32,6 +32,22 @@ PROGRAMS = {
         "depth": 6.0,
         "use_raster": True,
         "consider_corner_radius": True,
+    },
+    "mulde27x27": {
+        "filename": "mulde27x27.nc",
+        "description": "4 abgerundete Quadrate - Tasche ausraemen",
+        "num_contours": 4,
+        "contour_size": 27.0,
+        "corner_radius": 4.0,
+        "positions": [
+            (0, 50),      # 0° - 50mm vom Zentrum
+            (50, 0),      # 90° - 50mm vom Zentrum
+            (0, -50),     # 180° - 50mm vom Zentrum
+            (-50, 0),     # 270° - 50mm vom Zentrum
+        ],
+        "depth": 8.0,
+        "use_raster": True,
+        "consider_corner_radius": True,
     }
 }
 

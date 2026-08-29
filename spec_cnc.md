@@ -51,11 +51,28 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 - Kontur-Groesse: 35mm x 35mm
 - Eckradius: 10mm
 - Positionen: 0°, 90°, 180°, 270°
-- Abstand vom Zentrum: 50mm
+- Abstand vom Zentrum: 60mm
 - Taschentiefe: 6mm
-- Rastermuster: ja (horizontal spirale)
+- Spirale mit Kreisen im Zentrum: ja
 - Beruecksichtige Eckenradius: ja
 
+---
 
+### Mulde Sensor 27x27
+
+**Identifier:** mulde27x27
+**Filename:** mulde27x27.nc
+**Beschreibung:** 4 abgerundete Quadrate - Tasche ausraemen
+
+**Parameter:**
+- Anzahl Konturen: 4
+- Kontur-Typ: abgerundetes Quadrat
+- Kontur-Groesse: 27mm x 27mm
+- Eckradius: 4mm
+- Positionen: 0°, 90°, 180°, 270°
+- Abstand vom Zentrum: 50mm
+- Taschentiefe: 8mm
+- Spirale mit Kreisen im Zentrum: ja
+- Beruecksichtige Eckenradius: ja
 
 ---
