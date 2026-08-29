@@ -34,6 +34,9 @@ def parse_spec_cnc(filename):
         "Radiuskorrektur": "radius_correction",
     }
 
+    # Gültige Werte für Radiuskorrektur
+    valid_radius_corrections = {"keine", "innen", "aussen", "inner", "outer"}
+
     programs = {}
 
     with open(filename, 'r', encoding='utf-8') as f:
@@ -508,6 +511,73 @@ def generate_circle_pocket(f, program, config):
     f.write("M5                           ; Spindle OFF\n")
     f.write("M30                          ; Program end\n")
 
+def generate_circle_with_correction(f, program, config):
+    """Generiert einen Kreis mit Radiuskorrektur (aussen/innen) - nur ein Kreis pro Pass"""
+
+    f.write("; ============================================\n")
+    f.write("; CIRCLE WITH RADIUS CORRECTION\n")
+    f.write("; ============================================\n")
+
+    diameter = program["diameter"]
+    radius = diameter / 2.0
+    depth = program["depth"]
+    center_x, center_y = program["center"]
+    tool_radius = config["tool_diameter"] / 2.0
+    radius_correction = program.get("radius_correction", "outer")
+
+    # Berechne Anzahl der Passes
+    num_passes = math.ceil(depth / config["depth_per_pass"])
+
+    # Bestimme Display-Text
+    if radius_correction == "outer" or radius_correction == "aussen":
+        display_correction = "aussen"
+    else:
+        display_correction = "innen"
+
+    f.write(f"; Durchmesser: {diameter:.1f}mm, Tiefe: {depth:.1f}mm\n")
+    f.write(f"; Radiuskorrektur: {display_correction}\n")
+    f.write(f"; Passes: {num_passes}, Zustellung: {config['depth_per_pass']}mm pro Pass\n\n")
+
+    # Für jeden Pass
+    for pass_num in range(1, num_passes + 1):
+        current_depth = pass_num * config["depth_per_pass"]
+        if current_depth > depth:
+            current_depth = depth
+
+        z_depth = -current_depth
+
+        f.write(f"; Pass {pass_num}: Z = {z_depth:.2f}mm\n")
+
+        # Rapid zu Sicherheitshoehe
+        f.write(f"G0 Z{config['safety_height']}\n")
+
+        # Startpunkt je nach Radiuskorrektur
+        if radius_correction == "outer" or radius_correction == "aussen":
+            # Aussen: Werkzeug ist ausserhalb des Kreises
+            start_radius = radius + tool_radius
+        else:  # innen / inner
+            # Innen: Werkzeug ist innerhalb des Kreises
+            start_radius = radius - tool_radius
+
+        f.write(f"G0 X{center_x + start_radius} Y{center_y}\n")
+
+        # Runterfahren mit Vorschub
+        f.write(f"G1 Z{z_depth:.2f} F{config['feed_rate']}\n")
+
+        # Einen Kreis fahren
+        f.write(f"G2 X{center_x + start_radius} Y{center_y} I{-start_radius} J0 F{config['feed_rate']}\n")
+
+        f.write("\n")
+
+    # Finish
+    f.write("; ============================================\n")
+    f.write("; PROGRAM ENDE\n")
+    f.write("; ============================================\n")
+    f.write(f"G0 Z{config['safety_height']}\n")
+    f.write("G0 X0 Y0\n")
+    f.write("M5                           ; Spindle OFF\n")
+    f.write("M30                          ; Program end\n")
+
 def generate_program(program_id, program_spec, config):
     """Generiert ein NC-Programm"""
 
@@ -563,10 +633,20 @@ def generate_program(program_id, program_spec, config):
         prog_type = program_spec.get("type", "").strip()
         if prog_type == "pocket_square":
             generate_pocket(f, normalized, config)
-        elif prog_type == "circle_pocket" or prog_type == "circle_outer" or prog_type == "circle_inner":
-            if prog_type != "circle_pocket":
-                normalized["radius_correction"] = prog_type.split("_")[1]
+        elif prog_type == "circle_pocket":
             generate_circle_pocket(f, normalized, config)
+        elif prog_type == "circle":
+            # Nutze radius_correction Parameter um zu entscheiden
+            radius_corr = normalized.get("radius_correction", "keine").lower()
+            if radius_corr in ("aussen", "outer"):
+                normalized["radius_correction"] = "aussen"
+                generate_circle_with_correction(f, normalized, config)
+            elif radius_corr in ("innen", "inner"):
+                normalized["radius_correction"] = "innen"
+                generate_circle_with_correction(f, normalized, config)
+            else:
+                # keine Radiuskorrektur - verwende circle_pocket
+                generate_circle_pocket(f, normalized, config)
         elif prog_type == "ring_pocket":
             generate_ring_pocket(f, normalized, config)
         elif prog_type == "multi_circle_drill":

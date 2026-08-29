@@ -147,11 +147,10 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 
 **Identifier:** kreis_200_aussen
 **Filename:** kreis_200_aussen.nc
-**Type:** circle_outer
+**Type:** circle
 **Description:** Kreis 200mm - Aussenkontur
 
 **Parameters:**
-- Anzahl Konturen: 1
 - Durchmesser: 200mm
 - Abstand vom Zentrum: 0mm
 - Taschentiefe: 12mm
@@ -163,11 +162,10 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 
 **Identifier:** kreis_80_innen
 **Filename:** kreis_80_innen.nc
-**Type:** circle_inner
+**Type:** circle
 **Description:** Kreis 80mm - Innenkontur
 
 **Parameters:**
-- Anzahl Konturen: 1
 - Durchmesser: 80mm
 - Abstand vom Zentrum: 0mm
 - Taschentiefe: 12mm
