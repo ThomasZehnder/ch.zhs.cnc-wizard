@@ -46,9 +46,9 @@ def format_nc_file(filepath):
 
     print(f"Formatiert: {filepath}")
 
-# Formatiere alle .nc Dateien
+# Formatiere alle .nc Dateien (ausser die mit a_ Präfix)
 for nc_file in glob.glob('*.nc'):
-    if nc_file != 'empty.nc':
+    if not nc_file.startswith('a_'):
         format_nc_file(nc_file)
 
 print("Alle NC-Dateien formatiert!")

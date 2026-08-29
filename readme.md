@@ -22,13 +22,27 @@ generate_dxf.py                # DXF-Generator (optional)
 
 ## Verwendung
 
-1. Bearbeite `spec_cnc.md` und definiere die NC-Programme
-2. Führe `generate_nc_from_spec.py` aus
-3. Die generierten `.nc` Dateien sind MACH3-ready
+### Schnellstart: Alle NC-Dateien regenerieren
 
-```bash
-python generate_nc_from_spec.py
+```powershell
+powershell -ExecutionPolicy Bypass -File generate_all.ps1
 ```
+
+Das Skript:
+1. Löscht alte NC-Dateien (ausser die mit `a_` Präfix)
+2. Generiert neue NC-Dateien aus `spec_cnc.md`
+3. Formatiert alle Zahlen konsistent (6 Dezimalstellen, mindestens 1 nach dem Komma)
+
+### Manuelle Schritte
+
+1. Bearbeite `spec_cnc.md` und definiere die NC-Programme
+2. Führe Generator aus: `python generate_nc_from_spec.py`
+3. Formatiere die Ausgabe: `python format_nc_files.py`
+4. Die generierten `.nc` Dateien sind MACH3-ready
+
+### Dateien mit a_ Präfix
+
+Dateien die mit `a_` beginnen (z.B. `a_go_home_position.nc`) werden von der Regenerierung ausgenommen und erhalten bleiben.
 
 ## NC-Program-Typen
 
