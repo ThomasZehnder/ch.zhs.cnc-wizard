@@ -22,16 +22,17 @@ generate_dxf.py                # DXF-Generator (optional)
 
 ## Verwendung
 
-### Schnellstart: Alle NC-Dateien regenerieren
+### Schnellstart: Alle Dateien regenerieren (NC + DXF)
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File generate_all.ps1
 ```
 
-Das Skript:
-1. Löscht alte NC-Dateien (ausser die mit `a_` Präfix)
-2. Generiert neue NC-Dateien aus `spec_cnc.md`
+Das Skript generiert:
+1. **NC-Dateien** aus `spec_cnc.md` (alle 9 NC-Programme)
+2. **DXF-Zeichnung** aus `spec_cnc.md` (Kreise, Labels, Mulden)
 3. Formatiert alle Zahlen konsistent (6 Dezimalstellen, mindestens 1 nach dem Komma)
+4. Erhält alle Dateien mit `a_` Präfix (z.B. `a_go_home_position.nc`)
 
 ### Manuelle Schritte
 

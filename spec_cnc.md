@@ -34,9 +34,9 @@
 **Description:** Beschriftung der Kreise mit Durchmesser
 
 **Parameters:**
-- Durchmesser: [200mm, 160mm, 110mm, 50mm]
+- Durchmesser: 200mm, 160mm, 110mm, 50mm
 - Abstand zum Kreis: 2mm
-- Position: 60° (vom Zentrum)
+- Position: 60°
 - Schriftgröße: 3mm
 
 #### Titel-Label
