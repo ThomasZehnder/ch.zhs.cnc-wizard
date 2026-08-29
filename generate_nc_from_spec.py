@@ -599,11 +599,19 @@ def generate_program(program_id, program_spec, config):
     # Normalisiere Parameter für Funktionen
     normalized = program_spec.copy()
 
+    # Bestimme Programm-Typ
+    prog_type = program_spec.get("type", "").strip()
+
     # Vereinheitliche Depth-Parameter
     if "pocket_depth" in normalized:
         normalized["depth"] = normalized["pocket_depth"]
     if "hole_depth" in normalized:
         normalized["depth"] = normalized["hole_depth"]
+
+    # Eckradius: Default 3mm wenn nicht vorhanden oder null/0
+    if prog_type == "pocket_square":
+        if "corner_radius" not in normalized or normalized.get("corner_radius") is None or normalized.get("corner_radius") == 0:
+            normalized["corner_radius"] = 3.0
 
     # Vereinheitliche Distance-Parameter
     if "distance_from_center" in normalized:
@@ -642,7 +650,6 @@ def generate_program(program_id, program_spec, config):
         generate_header(f)
 
         # Unterscheide zwischen verschiedenen Typen
-        prog_type = program_spec.get("type", "").strip()
         if prog_type == "pocket_square":
             generate_pocket(f, normalized, config)
         elif prog_type == "circle_pocket":

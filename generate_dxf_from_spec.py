@@ -231,7 +231,10 @@ POINT
                 if prog.get('type') == 'pocket_square':
                     # Generiere abgerundete Quadrate basierend auf NC-Parametern
                     size = prog.get('contour_size', 35.0)
-                    radius = prog.get('corner_radius', 10.0)
+                    # Default 3mm für Eckradius wenn nicht vorhanden oder null
+                    radius = prog.get('corner_radius')
+                    if radius is None or radius == 0:
+                        radius = 3.0
 
                     # Konvertiere Winkel zu (x, y) Koordinaten
                     angles = prog.get('positions', [])
