@@ -11,10 +11,10 @@ tool_diameter = 3.15
 tool_radius = tool_diameter / 2.0
 feed_rate = 450  # mm/min
 spindle_speed = 4000  # RPM
-safety_height = 5.0
+safety_height = 2.0  # 2mm above tool (absolute Z position)
 
-# Zustellung pro Pass: 80% Überdeckung des Werkzeuges
-depth_per_pass = tool_diameter * 0.8  # 2.52mm
+# Zustellung pro Pass: 4mm (laut allgemeine Regeln)
+depth_per_pass = 4.0  # 4mm pro Pass
 
 # Quadrat positions (center at 0° distance 50mm)
 quad_center_x = 0.0
@@ -87,8 +87,8 @@ with open(output_path, 'w') as f:
         y_min = quad_center_y - half_square + tool_radius
         y_max = quad_center_y + half_square - tool_radius
 
-        # Horizontal raster pattern (zigzag) with tool diameter spacing
-        raster_spacing = tool_diameter * 0.8  # 80% overlap = 2.52mm
+        # Horizontal raster pattern (zigzag) with 80% tool overlap
+        raster_spacing = tool_diameter * 0.8  # 80% Ueberdeckung = 2.52mm
         y_current = y_min
 
         while y_current <= y_max:
