@@ -111,6 +111,36 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 
 ---
 
+### Bohrungen 4x100
+
+**Identifier:** bohrung_4x100
+**Filename:** bohrung_4x100.nc
+**Type:** multi_circle_drill
+**Description:** 4 Bohrungen - senkrecht bohren
+
+**Parameters:**
+- Anzahl Bohrungen: 4
+- Positionen: 45°, 135°, 225°, 315°
+- Abstand vom Zentrum: 100mm
+- Bohrungstiefe: 6mm
+
+---
+
+### Bohrung Zentrum
+
+**Identifier:** bohrung_zentrum
+**Filename:** bohrung_zentrum.nc
+**Type:** multi_circle_drill
+**Description:** 1 Bohrung im Zentrum - senkrecht bohren
+
+**Parameters:**
+- Anzahl Bohrungen: 1
+- Abstand vom Zentrum: 0mm
+- Positionen: 0°
+- Taschentiefe: 6mm
+
+---
+
 ### Ring 110_160
 
 **Identifier:** ring110_160
