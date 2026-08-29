@@ -56,4 +56,6 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 - Rastermuster: ja (horizontal spirale)
 - Beruecksichtige Eckenradius: ja
 
+
+
 ---

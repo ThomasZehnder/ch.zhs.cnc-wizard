@@ -24,10 +24,10 @@ PROGRAMS = {
         "contour_size": 35.0,
         "corner_radius": 10.0,
         "positions": [
-            (0, 50),      # 0°
-            (50, 0),      # 90°
-            (0, -50),     # 180°
-            (-50, 0),     # 270°
+            (0, 60),      # 0° - 60mm vom Zentrum
+            (60, 0),      # 90° - 60mm vom Zentrum
+            (0, -60),     # 180° - 60mm vom Zentrum
+            (-60, 0),     # 270° - 60mm vom Zentrum
         ],
         "depth": 6.0,
         "use_raster": True,
@@ -102,36 +102,48 @@ def generate_pocket(f, program, config):
             f.write(f"G1 Z{z_depth:.2f} F{config['feed_rate']}\n")
 
             # Spiralfoermig nach innen: konzentrische Rechtecke mit abgerundeten Ecken
-            # Stoppe wenn Durchmesser < 1.5x Tool-Durchmesser (Vereinfachung im Zentrum)
-            min_size = config["tool_diameter"] * 0.75
+            # Wechsle zu Kreisen wenn gerade Seite < Tool-Durchmesser wird
+            min_straight_length = config["tool_diameter"]
             spiral_offset = 0
             half_size_current = half_size
+            use_circles = False
 
-            while half_size_current > min_size:
+            while half_size_current > tool_radius:
                 x_min = center_x - half_size_current + tool_radius
                 x_max = center_x + half_size_current - tool_radius
                 y_min = center_y - half_size_current + tool_radius
                 y_max = center_y + half_size_current - tool_radius
 
-                # Kontur nachfahren mit abgerundeten Ecken (Boegen nach AUSSEN)
-                # Start: unten-links
-                f.write(f"G1 X{x_min + corner_radius} Y{y_min} F{config['feed_rate']}\n")
+                # Pruefe ob gerade Seiten noch sinnvoll sind
+                straight_length = x_max - x_min - 2 * corner_radius
 
-                # Unten-Rechts (Bogen nach aussen - CCW)
-                f.write(f"G1 X{x_max - corner_radius} Y{y_min} F{config['feed_rate']}\n")
-                f.write(f"G3 X{x_max} Y{y_min + corner_radius} I0 J{corner_radius} F{config['feed_rate']}\n")
+                if straight_length < min_straight_length:
+                    use_circles = True
 
-                # Rechts-Oben (Bogen nach aussen - CCW)
-                f.write(f"G1 X{x_max} Y{y_max - corner_radius} F{config['feed_rate']}\n")
-                f.write(f"G3 X{x_max - corner_radius} Y{y_max} I{-corner_radius} J0 F{config['feed_rate']}\n")
+                if use_circles:
+                    # Nur noch Kreise fahren
+                    f.write(f"G1 X{center_x + half_size_current} Y{center_y} F{config['feed_rate']}\n")
+                    f.write(f"G2 X{center_x + half_size_current} Y{center_y} I{-half_size_current} J0 F{config['feed_rate']}\n")
+                else:
+                    # Kontur mit abgerundeten Ecken fahren
+                    # Start: unten-links
+                    f.write(f"G1 X{x_min + corner_radius} Y{y_min} F{config['feed_rate']}\n")
 
-                # Oben-Links (Bogen nach aussen - CCW)
-                f.write(f"G1 X{x_min + corner_radius} Y{y_max} F{config['feed_rate']}\n")
-                f.write(f"G3 X{x_min} Y{y_max - corner_radius} I0 J{-corner_radius} F{config['feed_rate']}\n")
+                    # Unten-Rechts (Bogen nach aussen - CCW)
+                    f.write(f"G1 X{x_max - corner_radius} Y{y_min} F{config['feed_rate']}\n")
+                    f.write(f"G3 X{x_max} Y{y_min + corner_radius} I0 J{corner_radius} F{config['feed_rate']}\n")
 
-                # Links-Unten (Bogen nach aussen - CCW)
-                f.write(f"G1 X{x_min} Y{y_min + corner_radius} F{config['feed_rate']}\n")
-                f.write(f"G3 X{x_min + corner_radius} Y{y_min} I{corner_radius} J0 F{config['feed_rate']}\n")
+                    # Rechts-Oben (Bogen nach aussen - CCW)
+                    f.write(f"G1 X{x_max} Y{y_max - corner_radius} F{config['feed_rate']}\n")
+                    f.write(f"G3 X{x_max - corner_radius} Y{y_max} I{-corner_radius} J0 F{config['feed_rate']}\n")
+
+                    # Oben-Links (Bogen nach aussen - CCW)
+                    f.write(f"G1 X{x_min + corner_radius} Y{y_max} F{config['feed_rate']}\n")
+                    f.write(f"G3 X{x_min} Y{y_max - corner_radius} I0 J{-corner_radius} F{config['feed_rate']}\n")
+
+                    # Links-Unten (Bogen nach aussen - CCW)
+                    f.write(f"G1 X{x_min} Y{y_min + corner_radius} F{config['feed_rate']}\n")
+                    f.write(f"G3 X{x_min + corner_radius} Y{y_min} I{corner_radius} J0 F{config['feed_rate']}\n")
 
                 # Nächste Spirale nach innen
                 half_size_current -= spiral_step
