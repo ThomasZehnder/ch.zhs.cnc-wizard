@@ -14,11 +14,27 @@ Dieses Projekt generiert automatisch G-Code für eine Messplatte (IR160-P) mit v
 ## Struktur
 
 ```
-spec_cnc.md                    # Spezifikation aller NC-Programme
-generate_nc_from_spec.py       # Parser + NC-Generator
-messplatte.dxf                 # DXF-Zeichnung als Referenz
-generate_dxf.py                # DXF-Generator (optional)
+spec_cnc.md                    # Spezifikation aller NC-Programme (Single Source of Truth)
+spec_parser.py                 # Gemeinsamer Parser für MD-Spezifikation
+generate_nc_from_spec.py       # NC-Generator (nutzt spec_parser)
+generate_dxf_from_spec.py      # DXF-Generator (nutzt spec_parser)
+format_nc_files.py             # Formatierung für numerische Genauigkeit
+generate_all.ps1               # Orchestrierungsskript
 ```
+
+## Architektur
+
+Die Lösung verwendet eine **Single Source of Truth** Architektur:
+
+1. **spec_cnc.md** – Zentrale Spezifikation mit allen NC-Programmen und DXF-Geometrien
+2. **spec_parser.py** – Gemeinsamer Parser, der Markdown in strukturierte Daten konvertiert
+   - `parse_spec_cnc()` – Extrahiert NC-Programmdefinitionen
+   - `parse_dxf_spec()` – Extrahiert DXF-Spezifikationen
+3. **Generatoren** – Nutzen den gemeinsamen Parser
+   - `generate_nc_from_spec.py` – Erstellt G-Code-Dateien
+   - `generate_dxf_from_spec.py` – Erstellt DXF-Zeichnungen
+
+Diese Struktur vermeidet Duplikation und stellt sicher, dass beide Generatoren immer synchron sind.
 
 ## Verwendung
 

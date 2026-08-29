@@ -5,6 +5,7 @@ Parst die Spezifikation und generiert alle NC-Dateien
 """
 import math
 import re
+from spec_parser import parse_spec_cnc, normalize_corner_radius
 
 # Konfiguration (geparst aus spec_cnc.md)
 CONFIG = {
@@ -27,119 +28,6 @@ def format_float(value):
         else:
             return f"{rounded:.6f}".rstrip('0')  # Entferne trailing zeros aber behalte mindestens .0
     return str(value)
-
-def parse_spec_cnc(filename):
-    """Parst die standardisierte spec_cnc.md und generiert PROGRAMS Dictionary"""
-    # Mapping von Markdown-Parameternamen zu Python-Schlüsseln
-    param_mapping = {
-        "Anzahl Konturen": "num_contours",
-        "Kontur Groesse": "contour_size",
-        "Eckradius": "corner_radius",
-        "Positionen": "positions",
-        "Abstand vom Zentrum": "distance_from_center",
-        "Taschentiefe": "pocket_depth",
-        "Anzahl Bohrungen": "num_holes",
-        "Bohrungstiefe": "hole_depth",
-        "Durchmesser": "diameter",
-        "Durchmesser Innen": "diameter_inner",
-        "Durchmesser Aussen": "diameter_outer",
-        "Radiuskorrektur": "radius_correction",
-    }
-
-    # Gültige Werte für Radiuskorrektur
-    valid_radius_corrections = {"keine", "innen", "aussen", "inner", "outer"}
-
-    programs = {}
-
-    with open(filename, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-
-    i = 0
-    while i < len(lines):
-        line = lines[i].strip()
-
-        # Suche nach Programm-Sektionen (### Name)
-        if line.startswith('### '):
-            program_name = line[4:].strip()
-            identifier = None
-            filename = None
-            prog_type = None
-            description = None
-            params = {}
-
-            # Lese nächste Zeilen für Metadaten
-            i += 1
-            while i < len(lines):
-                line = lines[i].strip()
-
-                if line.startswith('**Identifier:**'):
-                    identifier = line.split(':', 1)[1].strip().strip('*').strip()
-                elif line.startswith('**Filename:**'):
-                    filename = line.split(':', 1)[1].strip().strip('*').strip()
-                elif line.startswith('**Type:**'):
-                    prog_type = line.split(':', 1)[1].strip().strip('*').strip()
-                elif line.startswith('**Description:**'):
-                    description = line.split(':', 1)[1].strip().strip('*').strip()
-                elif line.startswith('**Parameters:**'):
-                    # Parse alle Parameter-Zeilen
-                    i += 1
-                    while i < len(lines):
-                        param_line = lines[i].strip()
-
-                        if param_line.startswith('- ') and ':' in param_line:
-                            param_line = param_line[2:].strip()
-                            key, value = param_line.split(':', 1)
-                            key = key.strip()
-                            value = value.strip()
-
-                            # Konvertiere Markdown-Namen zu Python-Namen
-                            python_key = param_mapping.get(key, key.lower().replace(' ', '_'))
-
-                            # Konvertiere zu Python-Typen
-                            if value.lower() in ('ja', 'true'):
-                                params[python_key] = True
-                            elif value.lower() in ('nein', 'false'):
-                                params[python_key] = False
-                            elif '°' in value:
-                                # Winkel: "0°, 90°, 180°, 270°"
-                                params[python_key] = [int(re.sub(r'[°\s]', '', x)) for x in value.split(',')]
-                            else:
-                                # Entferne 'mm' suffix und versuche zu konvertieren
-                                clean_value = re.sub(r'mm\s*$', '', value).strip()
-                                if clean_value.isdigit():
-                                    params[python_key] = int(clean_value)
-                                elif re.match(r'^-?\d+\.?\d*$', clean_value):
-                                    params[python_key] = float(clean_value)
-                                else:
-                                    params[python_key] = value
-                        elif param_line.startswith('---') or param_line.startswith('###'):
-                            break
-                        elif param_line == '':
-                            pass
-                        else:
-                            break
-
-                        i += 1
-
-                    break
-
-                i += 1
-
-            # Erstelle Programm-Dict
-            if identifier and filename:
-                program = {
-                    "filename": filename,
-                    "description": description,
-                    "type": prog_type,
-                }
-                program.update(params)
-                programs[identifier] = program
-
-            continue
-
-        i += 1
-
-    return programs
 
 # Programme aus spec_cnc.md parsen
 PROGRAMS = parse_spec_cnc('spec_cnc.md')
@@ -610,8 +498,7 @@ def generate_program(program_id, program_spec, config):
 
     # Eckradius: Default 3mm wenn nicht vorhanden oder null/0
     if prog_type == "pocket_square":
-        if "corner_radius" not in normalized or normalized.get("corner_radius") is None or normalized.get("corner_radius") == 0:
-            normalized["corner_radius"] = 3.0
+        normalized["corner_radius"] = normalize_corner_radius(normalized.get("corner_radius"))
 
     # Vereinheitliche Distance-Parameter
     if "distance_from_center" in normalized:
