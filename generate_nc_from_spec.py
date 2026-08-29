@@ -80,6 +80,15 @@ PROGRAMS = {
         "center": (0, 0),
         "depth": 6.0,
         "use_spiral": True,
+    },
+    "bohrung_4x50": {
+        "filename": "bohrung_4x50.nc",
+        "description": "4 Bohrungen - Position 45/135/225/315 im Abstand 50mm",
+        "num_contours": 4,
+        "type": "multi_circle",
+        "angles": [45, 135, 225, 315],
+        "distance": 50.0,
+        "depth": 6.0,
     }
 }
 
@@ -279,6 +288,62 @@ def generate_ring_pocket(f, program, config):
     f.write("M5                           ; Spindle OFF\n")
     f.write("M30                          ; Program end\n")
 
+def generate_multi_circle_pockets(f, program, config):
+    """Generiert mehrere senkrechte Bohrungen an verschiedenen Positionen"""
+
+    f.write("; ============================================\n")
+    f.write("; MULTIPLE BOREHOLES (senkrecht)\n")
+    f.write("; ============================================\n")
+
+    depth = program["depth"]
+    angles = program["angles"]
+    distance = program["distance"]
+
+    # Berechne Anzahl der Passes
+    num_passes = math.ceil(depth / config["depth_per_pass"])
+
+    f.write(f"; Anzahl Bohrungen: {len(angles)}, Tiefe: {depth}mm\n")
+    f.write(f"; Positionen: {angles}°, Abstand: {distance}mm vom Zentrum\n")
+    f.write(f"; Passes: {num_passes}, Zustellung: {config['depth_per_pass']}mm pro Pass\n\n")
+
+    # Für jede Bohrung
+    for hole_idx, angle_deg in enumerate(angles, 1):
+        f.write(f"; === Bohrung {hole_idx}: {angle_deg}° ===\n")
+
+        angle_rad = math.radians(angle_deg)
+        center_x = distance * math.cos(angle_rad)
+        center_y = distance * math.sin(angle_rad)
+
+        # Für jeden Pass
+        for pass_num in range(1, num_passes + 1):
+            current_depth = pass_num * config["depth_per_pass"]
+            if current_depth > depth:
+                current_depth = depth
+
+            z_depth = -current_depth
+
+            f.write(f"; Pass {pass_num}: Z = {z_depth:.2f}mm\n")
+
+            # Rapid zu Sicherheitshoehe
+            f.write(f"G0 Z{config['safety_height']}\n")
+
+            # Zu Bohrungsmittelpunkt fahren
+            f.write(f"G0 X{center_x} Y{center_y}\n")
+
+            # Senkrecht absenken mit Vorschub
+            f.write(f"G1 Z{z_depth:.2f} F{config['feed_rate']}\n")
+
+            f.write("\n")
+
+    # Finish
+    f.write("; ============================================\n")
+    f.write("; PROGRAM ENDE\n")
+    f.write("; ============================================\n")
+    f.write(f"G0 Z{config['safety_height']}\n")
+    f.write("G0 X0 Y0\n")
+    f.write("M5                           ; Spindle OFF\n")
+    f.write("M30                          ; Program end\n")
+
 def generate_circle_pocket(f, program, config):
     """Generiert ein kreisfoermiges Taschenprogramm"""
 
@@ -361,7 +426,9 @@ def generate_program(program_id, program_spec, config):
         generate_header(f)
 
         # Unterscheide zwischen verschiedenen Typen
-        if program_spec.get("type") == "circle":
+        if program_spec.get("type") == "multi_circle":
+            generate_multi_circle_pockets(f, program_spec, config)
+        elif program_spec.get("type") == "circle":
             generate_circle_pocket(f, program_spec, config)
         elif program_spec.get("type") == "ring":
             generate_ring_pocket(f, program_spec, config)

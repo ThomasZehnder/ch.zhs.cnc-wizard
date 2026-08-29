@@ -11,6 +11,14 @@
 - Rasterueberdeckung beim ausraemen: 80% Werkzeugdurchmesser (2.52mm)
 - ASCII-Zeichensatz: ja
 
+## Startbedingung (fuer alle Programme)
+
+- Einstochen: auf der **inneren Kontur** (Werkzeugradius-korrigiert)
+- Fuer Mulden/Kreise: auf der Außenkante, mit Werkzeugradius-Offset
+- Fuer Ringe: auf der äußeren Kontur, mit Werkzeugradius-Offset
+- Dann: absenken mit Vorschub F450 auf Taschentiefe
+- Dann: Spirale nach innen fahren
+
 ## G-Code Header (fuer alle Programme)
 
 ```gcode
@@ -124,5 +132,21 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 - Abstand vom Zentrum: 0mm
 - Taschentiefe: 6mm
 - Spirale mit Kreisen: ja
+
+---
+
+### Bohrungen 4x50
+
+**Identifier:** bohrung_4x50
+**Filename:** bohrung_4x50.nc
+**Beschreibung:** 4 Bohrungen, Position 45°/135°/225°/315° im Abstand von 50mm vom Zentrum
+
+**Parameter:**
+- Anzahl 4
+- Kontur-Typ: bohrung
+- Position 45°/135°/225°/315°
+- Abstand vom Zentrum: 50mm
+- Bohrungstiefe: 6mm
+
 
 ---
