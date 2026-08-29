@@ -143,8 +143,10 @@ def generate_pocket(f, program, config):
             # Rapid zu Sicherheitshoehe
             f.write(f"G0 Z{config['safety_height']}\n")
 
-            # Zu Startpunkt (Kontur-Zentrum)
-            f.write(f"G0 X{center_x} Y{center_y}\n")
+            # Zu Startpunkt auf der AUSSEN-Kontur fahren (Anfang der geraden Seite, vor dem Radius)
+            start_x = center_x + half_size - corner_radius
+            start_y = center_y - half_size
+            f.write(f"G0 X{start_x} Y{start_y}\n")
 
             # Runterfahren mit Vorschub
             f.write(f"G1 Z{z_depth:.2f} F{config['feed_rate']}\n")
@@ -309,8 +311,9 @@ def generate_circle_pocket(f, program, config):
         # Rapid zu Sicherheitshoehe
         f.write(f"G0 Z{config['safety_height']}\n")
 
-        # Zu Kreis-Zentrum fahren
-        f.write(f"G0 X{center_x} Y{center_y}\n")
+        # Zu Startpunkt auf der AUSSEN-Kontur fahren
+        start_radius = radius - tool_radius
+        f.write(f"G0 X{center_x + start_radius} Y{center_y}\n")
 
         # Runterfahren mit Vorschub
         f.write(f"G1 Z{z_depth:.2f} F{config['feed_rate']}\n")
@@ -320,19 +323,15 @@ def generate_circle_pocket(f, program, config):
         min_radius = tool_radius
 
         while circle_radius > min_radius:
-            # Zu Startpunkt des Kreises fahren
-            f.write(f"G1 X{center_x + circle_radius} Y{center_y} F{config['feed_rate']}\n")
+            # Zu Startpunkt des Kreises fahren (falls nicht bereits dort)
+            if circle_radius != start_radius or pass_num > 1:
+                f.write(f"G1 X{center_x + circle_radius} Y{center_y} F{config['feed_rate']}\n")
 
             # Kreis fahren (G2 = clockwise)
             f.write(f"G2 X{center_x + circle_radius} Y{center_y} I{-circle_radius} J0 F{config['feed_rate']}\n")
 
             # Nächster Kreis nach innen
             circle_radius -= config["raster_spacing"]
-
-        # Letzter Kreis zum Zentrum
-        if circle_radius > 0:
-            f.write(f"G1 X{center_x + circle_radius} Y{center_y} F{config['feed_rate']}\n")
-            f.write(f"G2 X{center_x + circle_radius} Y{center_y} I{-circle_radius} J0 F{config['feed_rate']}\n")
 
         f.write("\n")
 
