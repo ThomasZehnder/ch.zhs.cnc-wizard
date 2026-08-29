@@ -2,7 +2,6 @@
 
 ## Allgemeine Regeln (fuer alle NC-Programme)
 
-- Zeichnung: messplatte.dxf
 - Format: MACH3 kompatibel
 - Vorschub: F450 mm/min
 - Fraesmaschine Durchmesser: 3.15mm
@@ -18,6 +17,38 @@
 - Fuer Ringe: auf der äußeren Kontur, mit Werkzeugradius-Offset
 - Dann: absenken mit Vorschub F450 auf Taschentiefe
 - Dann: Spirale nach innen fahren
+
+## DXF-Spezifikation
+
+### Allgemeine DXF-Parameter
+
+**Filename:** messplatte_160P.dxf
+**Format:** AutoCAD R12 DXF
+**Einheit:** mm
+
+### DXF-Geometrie
+
+#### Kreis-Labels
+
+**Type:** circle_labels
+**Description:** Beschriftung der Kreise mit Durchmesser
+
+**Parameters:**
+- Durchmesser: [200mm, 160mm, 110mm, 50mm]
+- Abstand zum Kreis: 2mm
+- Position: 60° (vom Zentrum)
+- Schriftgröße: 3mm
+
+#### Titel-Label
+
+**Type:** title
+**Description:** Beschriftung der Messplatte
+
+**Parameters:**
+- Text: "Messplatte IR160-P"
+- Position: 45° vom Zentrum
+- Abstand vom Zentrum: 110mm
+- Schriftgröße: 5mm
 
 ## G-Code Header (fuer alle Programme)
 
