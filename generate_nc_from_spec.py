@@ -48,6 +48,38 @@ PROGRAMS = {
         "depth": 8.0,
         "use_raster": True,
         "consider_corner_radius": True,
+    },
+    "bohrung50": {
+        "filename": "bohrung50.nc",
+        "description": "Bohrung 50mm - Tasche ausraemen",
+        "num_contours": 1,
+        "type": "circle",
+        "diameter": 50.0,
+        "center": (0, 0),
+        "depth": 12.0,
+        "use_spiral": True,
+    },
+    "ring110_160": {
+        "filename": "ring110_160.nc",
+        "description": "Ring innen 110, aussen 160mm - Tasche ausraemen",
+        "num_contours": 1,
+        "type": "ring",
+        "diameter_inner": 110.0,
+        "diameter_outer": 160.0,
+        "center": (0, 0),
+        "depth": 6.0,
+        "use_spiral": True,
+    },
+    "ring160_200": {
+        "filename": "ring160_200.nc",
+        "description": "Ring innen 160, aussen 200mm - Tasche ausraemen",
+        "num_contours": 1,
+        "type": "ring",
+        "diameter_inner": 160.0,
+        "diameter_outer": 200.0,
+        "center": (0, 0),
+        "depth": 6.0,
+        "use_spiral": True,
     }
 }
 
@@ -175,6 +207,144 @@ def generate_pocket(f, program, config):
     f.write("M5                           ; Spindle OFF\n")
     f.write("M30                          ; Program end\n")
 
+def generate_ring_pocket(f, program, config):
+    """Generiert ein ringfoermiges Taschenprogramm"""
+
+    f.write("; ============================================\n")
+    f.write("; RING POCKET CLEARING\n")
+    f.write("; ============================================\n")
+
+    diameter_outer = program["diameter_outer"]
+    diameter_inner = program["diameter_inner"]
+    radius_outer = diameter_outer / 2.0
+    radius_inner = diameter_inner / 2.0
+    depth = program["depth"]
+    center_x, center_y = program["center"]
+    tool_radius = config["tool_diameter"] / 2.0
+
+    # Berechne Anzahl der Passes
+    num_passes = math.ceil(depth / config["depth_per_pass"])
+
+    f.write(f"; Aussendurchmesser: {diameter_outer}mm, Innendurchmesser: {diameter_inner}mm\n")
+    f.write(f"; Tiefe: {depth}mm, Passes: {num_passes}, Zustellung: {config['depth_per_pass']}mm pro Pass\n")
+    f.write(f"; Spiralabstand: {config['raster_spacing']:.2f}mm\n\n")
+
+    # Für jeden Pass
+    for pass_num in range(1, num_passes + 1):
+        current_depth = pass_num * config["depth_per_pass"]
+        if current_depth > depth:
+            current_depth = depth
+
+        z_depth = -current_depth
+
+        f.write(f"; Pass {pass_num}: Z = {z_depth:.2f}mm\n")
+
+        # Rapid zu Sicherheitshoehe
+        f.write(f"G0 Z{config['safety_height']}\n")
+
+        # Zu Startpunkt auf der AUSSEN-Kontur fahren
+        start_radius = radius_outer - tool_radius
+        f.write(f"G0 X{center_x + start_radius} Y{center_y}\n")
+
+        # Runterfahren mit Vorschub
+        f.write(f"G1 Z{z_depth:.2f} F{config['feed_rate']}\n")
+
+        # Spiralfoermig: konzentrische Kreise von aussen nach innen (bis Innendurchmesser)
+        circle_radius = radius_outer - tool_radius
+        min_radius = radius_inner + tool_radius
+
+        while circle_radius > min_radius:
+            # Zu Startpunkt des Kreises fahren (falls nicht bereits dort)
+            if circle_radius != start_radius or pass_num > 1:
+                f.write(f"G1 X{center_x + circle_radius} Y{center_y} F{config['feed_rate']}\n")
+
+            # Kreis fahren (G2 = clockwise)
+            f.write(f"G2 X{center_x + circle_radius} Y{center_y} I{-circle_radius} J0 F{config['feed_rate']}\n")
+
+            # Nächster Kreis nach innen
+            circle_radius -= config["raster_spacing"]
+            start_radius = circle_radius
+
+        f.write("\n")
+
+    # Finish
+    f.write("; ============================================\n")
+    f.write("; PROGRAM ENDE\n")
+    f.write("; ============================================\n")
+    f.write(f"G0 Z{config['safety_height']}\n")
+    f.write("G0 X0 Y0\n")
+    f.write("M5                           ; Spindle OFF\n")
+    f.write("M30                          ; Program end\n")
+
+def generate_circle_pocket(f, program, config):
+    """Generiert ein kreisfoermiges Taschenprogramm"""
+
+    f.write("; ============================================\n")
+    f.write("; CIRCULAR POCKET CLEARING\n")
+    f.write("; ============================================\n")
+
+    diameter = program["diameter"]
+    radius = diameter / 2.0
+    depth = program["depth"]
+    center_x, center_y = program["center"]
+    tool_radius = config["tool_diameter"] / 2.0
+
+    # Berechne Anzahl der Passes
+    num_passes = math.ceil(depth / config["depth_per_pass"])
+
+    f.write(f"; Durchmesser: {diameter}mm, Tiefe: {depth}mm\n")
+    f.write(f"; Passes: {num_passes}, Zustellung: {config['depth_per_pass']}mm pro Pass\n")
+    f.write(f"; Spiralabstand: {config['raster_spacing']:.2f}mm\n\n")
+
+    # Für jeden Pass
+    for pass_num in range(1, num_passes + 1):
+        current_depth = pass_num * config["depth_per_pass"]
+        if current_depth > depth:
+            current_depth = depth
+
+        z_depth = -current_depth
+
+        f.write(f"; Pass {pass_num}: Z = {z_depth:.2f}mm\n")
+
+        # Rapid zu Sicherheitshoehe
+        f.write(f"G0 Z{config['safety_height']}\n")
+
+        # Zu Kreis-Zentrum fahren
+        f.write(f"G0 X{center_x} Y{center_y}\n")
+
+        # Runterfahren mit Vorschub
+        f.write(f"G1 Z{z_depth:.2f} F{config['feed_rate']}\n")
+
+        # Spiralfoermig: konzentrische Kreise von aussen nach innen
+        circle_radius = radius - tool_radius
+        min_radius = tool_radius
+
+        while circle_radius > min_radius:
+            # Zu Startpunkt des Kreises fahren
+            f.write(f"G1 X{center_x + circle_radius} Y{center_y} F{config['feed_rate']}\n")
+
+            # Kreis fahren (G2 = clockwise)
+            f.write(f"G2 X{center_x + circle_radius} Y{center_y} I{-circle_radius} J0 F{config['feed_rate']}\n")
+
+            # Nächster Kreis nach innen
+            circle_radius -= config["raster_spacing"]
+
+        # Letzter Kreis zum Zentrum
+        if circle_radius > 0:
+            f.write(f"G1 X{center_x + circle_radius} Y{center_y} F{config['feed_rate']}\n")
+            f.write(f"G2 X{center_x + circle_radius} Y{center_y} I{-circle_radius} J0 F{config['feed_rate']}\n")
+
+        f.write("\n")
+
+    # Finish
+    f.write("; ============================================\n")
+    f.write("; PROGRAM ENDE\n")
+    f.write("; ============================================\n")
+    f.write(f"G0 Z{config['safety_height']}\n")
+    f.write("G0 X0 Y0\n")
+    f.write("M5                           ; Spindle OFF\n")
+    f.write("M30                          ; Program end\n")
+
 def generate_program(program_id, program_spec, config):
     """Generiert ein NC-Programm"""
 
@@ -189,7 +359,14 @@ def generate_program(program_id, program_spec, config):
         f.write("; ============================================\n\n")
 
         generate_header(f)
-        generate_pocket(f, program_spec, config)
+
+        # Unterscheide zwischen verschiedenen Typen
+        if program_spec.get("type") == "circle":
+            generate_circle_pocket(f, program_spec, config)
+        elif program_spec.get("type") == "ring":
+            generate_ring_pocket(f, program_spec, config)
+        else:
+            generate_pocket(f, program_spec, config)
 
     print(f"NC file created: {output_path}")
 

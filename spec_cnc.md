@@ -51,7 +51,7 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 - Kontur-Groesse: 35mm x 35mm
 - Eckradius: 10mm
 - Positionen: 0°, 90°, 180°, 270°
-- Abstand vom Zentrum: 60mm
+- Abstand vom Zentrum: 50mm
 - Taschentiefe: 6mm
 - Spirale mit Kreisen im Zentrum: ja
 - Beruecksichtige Eckenradius: ja
@@ -74,5 +74,55 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 - Taschentiefe: 8mm
 - Spirale mit Kreisen im Zentrum: ja
 - Beruecksichtige Eckenradius: ja
+
+---
+
+### Mulde Kreis 50
+
+**Identifier:** bohrung50
+**Filename:** bohrung50.nc
+**Beschreibung:** bohrung  50
+
+**Parameter:**
+- Anzahl 1
+- Kontur-Typ: kreis
+- Durchmesse: 50mm
+- Abstand vom Zentrum: 0mm
+- Taschentiefe: 12mm
+- Spirale mit Kreisen: ja
+
+---
+
+### Ring 110_160
+
+**Identifier:** ring110_160
+**Filename:** ring110_160.nc
+**Beschreibung:** ring innen 110, aussen 160mmm
+
+**Parameter:**
+- Anzahl 1
+- Kontur-Typ: ring
+- Durchmesse Innen: 110mm
+- Durchmesse Aussen: 160mm
+- Abstand vom Zentrum: 0mm
+- Taschentiefe: 6mm
+- Spirale mit Kreisen: ja
+
+---
+
+### Ring 160_200
+
+**Identifier:** ring160_200
+**Filename:** ring160_200.nc
+**Beschreibung:** ring innen 160, aussen 200mmm
+
+**Parameter:**
+- Anzahl 1
+- Kontur-Typ: ring
+- Durchmesse Innen: 160mm
+- Durchmesse Aussen: 200mm
+- Abstand vom Zentrum: 0mm
+- Taschentiefe: 6mm
+- Spirale mit Kreisen: ja
 
 ---
