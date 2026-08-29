@@ -56,8 +56,8 @@ SECTION
 ENTITIES
 """)
 
-    # Circles: 160mm, 110mm, 50mm diameter
-    for diameter in [160.0, 110.0, 50.0]:
+    # Circles: 200mm, 160mm, 110mm, 50mm diameter
+    for diameter in [200.0, 160.0, 110.0, 50.0]:
         radius = diameter / 2.0
         f.write(f"""  0
 CIRCLE
@@ -69,6 +69,39 @@ CIRCLE
 0.0
  40
 {radius}
+""")
+
+    # Boreholes as points: 4x at 45°/135°/225°/315°, distance 100mm and 50mm from center
+    hole_angles = [45.0, 135.0, 225.0, 315.0]
+
+    for hole_distance in [100.0, 50.0]:
+        for angle_deg in hole_angles:
+            angle_rad = math.radians(angle_deg)
+            x = hole_distance * math.cos(angle_rad)
+            y = hole_distance * math.sin(angle_rad)
+            f.write(f"""  0
+POINT
+  8
+0
+ 10
+{x}
+ 20
+{y}
+ 30
+0.0
+""")
+
+    # Center borehole as point
+    f.write(f"""  0
+POINT
+  8
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
 """)
 
     radius_pos = 50.0
