@@ -25,3 +25,6 @@ AutoCAD R12 DXF
 
 ## generation of dxf file
 translate using generate_dxf.py
+
+## generated dxf file
+by claude :-)

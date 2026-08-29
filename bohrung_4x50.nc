@@ -1,5 +1,5 @@
 ; ============================================
-; 4 Bohrungen - Position 45/135/225/315 im Abstand 50mm
+; 4 Bohrungen - senkrecht bohren
 ; ID: bohrung_4x50
 ; Generated for MACH3
 ; ============================================
@@ -27,8 +27,8 @@ G4 P2.0                      ; Dwell 2 seconds
 ; ============================================
 ; MULTIPLE BOREHOLES (senkrecht)
 ; ============================================
-; Anzahl Bohrungen: 4, Tiefe: 6.0mm
-; Positionen: [45, 135, 225, 315]°, Abstand: 50.0mm vom Zentrum
+; Anzahl Bohrungen: 4, Tiefe: 6mm
+; Positionen: [45, 135, 225, 315]°, Abstand: 50mm vom Zentrum
 ; Passes: 2, Zustellung: 4.0mm pro Pass
 
 ; === Bohrung 1: 45° ===

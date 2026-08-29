@@ -45,24 +45,22 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 
 ---
 
-## NC-Programme
+## NC-Programme (einheitliches Format)
 
 ### Mulde Sensor 35x35
 
 **Identifier:** mulde35x35
 **Filename:** mulde35x35.nc
-**Beschreibung:** 4 abgerundete Quadrate - Tasche ausraemen
+**Type:** pocket_square
+**Description:** 4 abgerundete Quadrate - Tasche ausraemen
 
-**Parameter:**
+**Parameters:**
 - Anzahl Konturen: 4
-- Kontur-Typ: abgerundetes Quadrat
-- Kontur-Groesse: 35mm x 35mm
+- Kontur Groesse: 35mm
 - Eckradius: 10mm
 - Positionen: 0°, 90°, 180°, 270°
-- Abstand vom Zentrum: 50mm
+- Abstand vom Zentrum: 60mm
 - Taschentiefe: 6mm
-- Spirale mit Kreisen im Zentrum: ja
-- Beruecksichtige Eckenradius: ja
 
 ---
 
@@ -70,34 +68,46 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 
 **Identifier:** mulde27x27
 **Filename:** mulde27x27.nc
-**Beschreibung:** 4 abgerundete Quadrate - Tasche ausraemen
+**Type:** pocket_square
+**Description:** 4 abgerundete Quadrate - Tasche ausraemen
 
-**Parameter:**
+**Parameters:**
 - Anzahl Konturen: 4
-- Kontur-Typ: abgerundetes Quadrat
-- Kontur-Groesse: 27mm x 27mm
+- Kontur Groesse: 27mm
 - Eckradius: 4mm
 - Positionen: 0°, 90°, 180°, 270°
 - Abstand vom Zentrum: 50mm
 - Taschentiefe: 8mm
-- Spirale mit Kreisen im Zentrum: ja
-- Beruecksichtige Eckenradius: ja
 
 ---
 
-### Mulde Kreis 50
+### Bohrung 50
 
 **Identifier:** bohrung50
 **Filename:** bohrung50.nc
-**Beschreibung:** bohrung  50
+**Type:** circle_pocket
+**Description:** Bohrung 50mm - Tasche ausraemen
 
-**Parameter:**
-- Anzahl 1
-- Kontur-Typ: kreis
-- Durchmesse: 50mm
+**Parameters:**
+- Anzahl Konturen: 1
+- Durchmesser: 50mm
 - Abstand vom Zentrum: 0mm
 - Taschentiefe: 12mm
-- Spirale mit Kreisen: ja
+
+---
+
+### Bohrungen 4x50
+
+**Identifier:** bohrung_4x50
+**Filename:** bohrung_4x50.nc
+**Type:** multi_circle_drill
+**Description:** 4 Bohrungen - senkrecht bohren
+
+**Parameters:**
+- Anzahl Bohrungen: 4
+- Positionen: 45°, 135°, 225°, 315°
+- Abstand vom Zentrum: 50mm
+- Bohrungstiefe: 6mm
 
 ---
 
@@ -105,16 +115,15 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 
 **Identifier:** ring110_160
 **Filename:** ring110_160.nc
-**Beschreibung:** ring innen 110, aussen 160mmm
+**Type:** ring_pocket
+**Description:** Ring innen 110mm, aussen 160mm - Tasche ausraemen
 
-**Parameter:**
-- Anzahl 1
-- Kontur-Typ: ring
-- Durchmesse Innen: 110mm
-- Durchmesse Aussen: 160mm
+**Parameters:**
+- Anzahl Konturen: 1
+- Durchmesser Innen: 110mm
+- Durchmesser Aussen: 160mm
 - Abstand vom Zentrum: 0mm
 - Taschentiefe: 6mm
-- Spirale mit Kreisen: ja
 
 ---
 
@@ -122,60 +131,46 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 
 **Identifier:** ring160_200
 **Filename:** ring160_200.nc
-**Beschreibung:** ring innen 160, aussen 200mmm
+**Type:** ring_pocket
+**Description:** Ring innen 160mm, aussen 200mm - Tasche ausraemen
 
-**Parameter:**
-- Anzahl 1
-- Kontur-Typ: ring
-- Durchmesse Innen: 160mm
-- Durchmesse Aussen: 200mm
+**Parameters:**
+- Anzahl Konturen: 1
+- Durchmesser Innen: 160mm
+- Durchmesser Aussen: 200mm
 - Abstand vom Zentrum: 0mm
 - Taschentiefe: 6mm
-- Spirale mit Kreisen: ja
 
 ---
 
-### Bohrungen 4x50
-
-**Identifier:** bohrungen_4x50
-**Filename:** bohrungen_4x50.nc
-**Beschreibung:** 4 Bohrungen, Position 45°/135°/225°/315° im Abstand von 50mm vom Zentrum
-
-**Parameter:**
-- Anzahl 4
-- Kontur-Typ: bohrung
-- Position 45°/135°/225°/315°
-- Abstand vom Zentrum: 50mm
-- Bohrungstiefe: 6mm
-
----
-
-### Kreis 200 aussen
+### Kreis 200 Aussen
 
 **Identifier:** kreis_200_aussen
 **Filename:** kreis_200_aussen.nc
-**Beschreibung:** Kreis 200 aussen
+**Type:** circle_outer
+**Description:** Kreis 200mm - Aussenkontur
 
-**Parameter:**
-- Anzahl 1
-- Kontur-Typ: kreis
-- Durchmesse : 200mm
+**Parameters:**
+- Anzahl Konturen: 1
+- Durchmesser: 200mm
 - Abstand vom Zentrum: 0mm
 - Taschentiefe: 12mm
 - Radiuskorrektur: aussen
 
 ---
 
-### Kreis 80 innen
+### Kreis 80 Innen
 
 **Identifier:** kreis_80_innen
 **Filename:** kreis_80_innen.nc
-**Beschreibung:** Kreis 80 innen
+**Type:** circle_inner
+**Description:** Kreis 80mm - Innenkontur
 
-**Parameter:**
-- Anzahl 1
-- Kontur-Typ: kreis
-- Durchmesse : 80mm
+**Parameters:**
+- Anzahl Konturen: 1
+- Durchmesser: 80mm
 - Abstand vom Zentrum: 0mm
 - Taschentiefe: 12mm
 - Radiuskorrektur: innen
+
+---

@@ -27,7 +27,7 @@ G4 P2.0                      ; Dwell 2 seconds
 ; ============================================
 ; CIRCULAR POCKET CLEARING
 ; ============================================
-; Durchmesser: 50.0mm, Tiefe: 12.0mm
+; Durchmesser: 50mm, Tiefe: 12mm
 ; Passes: 3, Zustellung: 4.0mm pro Pass
 ; Spiralabstand: 2.52mm
 

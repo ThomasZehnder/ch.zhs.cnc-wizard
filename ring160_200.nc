@@ -1,5 +1,5 @@
 ; ============================================
-; Ring innen 160, aussen 200mm - Tasche ausraemen
+; Ring innen 160mm, aussen 200mm - Tasche ausraemen
 ; ID: ring160_200
 ; Generated for MACH3
 ; ============================================
@@ -27,8 +27,8 @@ G4 P2.0                      ; Dwell 2 seconds
 ; ============================================
 ; RING POCKET CLEARING
 ; ============================================
-; Aussendurchmesser: 200.0mm, Innendurchmesser: 160.0mm
-; Tiefe: 6.0mm, Passes: 2, Zustellung: 4.0mm pro Pass
+; Aussendurchmesser: 200mm, Innendurchmesser: 160mm
+; Tiefe: 6mm, Passes: 2, Zustellung: 4.0mm pro Pass
 ; Spiralabstand: 2.52mm
 
 ; Pass 1: Z = -4.00mm

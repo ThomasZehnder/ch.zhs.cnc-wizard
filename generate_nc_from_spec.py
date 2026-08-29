@@ -16,101 +16,118 @@ CONFIG = {
     "tool_diameter": 3.15,
 }
 
-PROGRAMS = {
-    "mulde35x35": {
-        "filename": "mulde35x35.nc",
-        "description": "4 abgerundete Quadrate - Tasche ausraemen",
-        "num_contours": 4,
-        "contour_size": 35.0,
-        "corner_radius": 10.0,
-        "positions": [
-            (0, 60),      # 0° - 60mm vom Zentrum
-            (60, 0),      # 90° - 60mm vom Zentrum
-            (0, -60),     # 180° - 60mm vom Zentrum
-            (-60, 0),     # 270° - 60mm vom Zentrum
-        ],
-        "depth": 6.0,
-        "use_raster": True,
-        "consider_corner_radius": True,
-    },
-    "mulde27x27": {
-        "filename": "mulde27x27.nc",
-        "description": "4 abgerundete Quadrate - Tasche ausraemen",
-        "num_contours": 4,
-        "contour_size": 27.0,
-        "corner_radius": 4.0,
-        "positions": [
-            (0, 50),      # 0° - 50mm vom Zentrum
-            (50, 0),      # 90° - 50mm vom Zentrum
-            (0, -50),     # 180° - 50mm vom Zentrum
-            (-50, 0),     # 270° - 50mm vom Zentrum
-        ],
-        "depth": 8.0,
-        "use_raster": True,
-        "consider_corner_radius": True,
-    },
-    "bohrung50": {
-        "filename": "bohrung50.nc",
-        "description": "Bohrung 50mm - Tasche ausraemen",
-        "num_contours": 1,
-        "type": "circle",
-        "diameter": 50.0,
-        "center": (0, 0),
-        "depth": 12.0,
-        "use_spiral": True,
-    },
-    "ring110_160": {
-        "filename": "ring110_160.nc",
-        "description": "Ring innen 110, aussen 160mm - Tasche ausraemen",
-        "num_contours": 1,
-        "type": "ring",
-        "diameter_inner": 110.0,
-        "diameter_outer": 160.0,
-        "center": (0, 0),
-        "depth": 6.0,
-        "use_spiral": True,
-    },
-    "ring160_200": {
-        "filename": "ring160_200.nc",
-        "description": "Ring innen 160, aussen 200mm - Tasche ausraemen",
-        "num_contours": 1,
-        "type": "ring",
-        "diameter_inner": 160.0,
-        "diameter_outer": 200.0,
-        "center": (0, 0),
-        "depth": 6.0,
-        "use_spiral": True,
-    },
-    "bohrung_4x50": {
-        "filename": "bohrung_4x50.nc",
-        "description": "4 Bohrungen - Position 45/135/225/315 im Abstand 50mm",
-        "num_contours": 4,
-        "type": "multi_circle",
-        "angles": [45, 135, 225, 315],
-        "distance": 50.0,
-        "depth": 6.0,
-    },
-    "kreis_200_aussen": {
-        "filename": "kreis_200_aussen.nc",
-        "description": "Kreis 200mm - Aussenkontur",
-        "num_contours": 1,
-        "type": "circle_with_correction",
-        "diameter": 200.0,
-        "center": (0, 0),
-        "depth": 12.0,
-        "radius_correction": "aussen",
-    },
-    "kreis_80_innen": {
-        "filename": "kreis_80_innen.nc",
-        "description": "Kreis 80mm - Innenkontur",
-        "num_contours": 1,
-        "type": "circle_with_correction",
-        "diameter": 80.0,
-        "center": (0, 0),
-        "depth": 12.0,
-        "radius_correction": "innen",
+def parse_spec_cnc(filename):
+    """Parst die standardisierte spec_cnc.md und generiert PROGRAMS Dictionary"""
+    # Mapping von Markdown-Parameternamen zu Python-Schlüsseln
+    param_mapping = {
+        "Anzahl Konturen": "num_contours",
+        "Kontur Groesse": "contour_size",
+        "Eckradius": "corner_radius",
+        "Positionen": "positions",
+        "Abstand vom Zentrum": "distance_from_center",
+        "Taschentiefe": "pocket_depth",
+        "Anzahl Bohrungen": "num_holes",
+        "Bohrungstiefe": "hole_depth",
+        "Durchmesser": "diameter",
+        "Durchmesser Innen": "diameter_inner",
+        "Durchmesser Aussen": "diameter_outer",
+        "Radiuskorrektur": "radius_correction",
     }
-}
+
+    programs = {}
+
+    with open(filename, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+
+        # Suche nach Programm-Sektionen (### Name)
+        if line.startswith('### '):
+            program_name = line[4:].strip()
+            identifier = None
+            filename = None
+            prog_type = None
+            description = None
+            params = {}
+
+            # Lese nächste Zeilen für Metadaten
+            i += 1
+            while i < len(lines):
+                line = lines[i].strip()
+
+                if line.startswith('**Identifier:**'):
+                    identifier = line.split(':', 1)[1].strip().strip('*').strip()
+                elif line.startswith('**Filename:**'):
+                    filename = line.split(':', 1)[1].strip().strip('*').strip()
+                elif line.startswith('**Type:**'):
+                    prog_type = line.split(':', 1)[1].strip().strip('*').strip()
+                elif line.startswith('**Description:**'):
+                    description = line.split(':', 1)[1].strip().strip('*').strip()
+                elif line.startswith('**Parameters:**'):
+                    # Parse alle Parameter-Zeilen
+                    i += 1
+                    while i < len(lines):
+                        param_line = lines[i].strip()
+
+                        if param_line.startswith('- ') and ':' in param_line:
+                            param_line = param_line[2:].strip()
+                            key, value = param_line.split(':', 1)
+                            key = key.strip()
+                            value = value.strip()
+
+                            # Konvertiere Markdown-Namen zu Python-Namen
+                            python_key = param_mapping.get(key, key.lower().replace(' ', '_'))
+
+                            # Konvertiere zu Python-Typen
+                            if value.lower() in ('ja', 'true'):
+                                params[python_key] = True
+                            elif value.lower() in ('nein', 'false'):
+                                params[python_key] = False
+                            elif '°' in value:
+                                # Winkel: "0°, 90°, 180°, 270°"
+                                params[python_key] = [int(re.sub(r'[°\s]', '', x)) for x in value.split(',')]
+                            else:
+                                # Entferne 'mm' suffix und versuche zu konvertieren
+                                clean_value = re.sub(r'mm\s*$', '', value).strip()
+                                if clean_value.isdigit():
+                                    params[python_key] = int(clean_value)
+                                elif re.match(r'^-?\d+\.?\d*$', clean_value):
+                                    params[python_key] = float(clean_value)
+                                else:
+                                    params[python_key] = value
+                        elif param_line.startswith('---') or param_line.startswith('###'):
+                            break
+                        elif param_line == '':
+                            pass
+                        else:
+                            break
+
+                        i += 1
+
+                    break
+
+                i += 1
+
+            # Erstelle Programm-Dict
+            if identifier and filename:
+                program = {
+                    "filename": filename,
+                    "description": description,
+                    "type": prog_type,
+                }
+                program.update(params)
+                programs[identifier] = program
+
+            continue
+
+        i += 1
+
+    return programs
+
+# Programme aus spec_cnc.md parsen
+PROGRAMS = parse_spec_cnc('spec_cnc.md')
 
 def generate_header(f):
     """Generiert den G-Code Header"""
@@ -497,6 +514,42 @@ def generate_program(program_id, program_spec, config):
     filename = program_spec["filename"]
     output_path = f'd:\\Arduino\\force-sensor\\messplatte-ir-160-p\\{filename}'
 
+    # Normalisiere Parameter für Funktionen
+    normalized = program_spec.copy()
+
+    # Vereinheitliche Depth-Parameter
+    if "pocket_depth" in normalized:
+        normalized["depth"] = normalized["pocket_depth"]
+    if "hole_depth" in normalized:
+        normalized["depth"] = normalized["hole_depth"]
+
+    # Vereinheitliche Distance-Parameter
+    if "distance_from_center" in normalized:
+        normalized["distance"] = normalized["distance_from_center"]
+
+    # Vereinheitliche Positions-Parameter
+    if "positions" in normalized:
+        angles = normalized["positions"]
+        distance = normalized.get("distance_from_center", 0)
+
+        # Speichere die ursprünglichen Winkel
+        normalized["angles"] = angles
+
+        # Konvertiere Winkel zu (x, y) Koordinaten
+        positions = []
+        for angle in angles:
+            rad = math.radians(angle)
+            x = distance * math.cos(rad)
+            y = distance * math.sin(rad)
+            positions.append((x, y))
+        normalized["positions"] = positions
+
+    # Für single-center Programme: center = positions[0] oder (0, 0)
+    if "positions" in normalized and len(normalized["positions"]) > 0:
+        normalized["center"] = normalized["positions"][0]
+    elif "distance_from_center" in normalized:
+        normalized["center"] = (0, 0)
+
     with open(output_path, 'w') as f:
         f.write("; ============================================\n")
         f.write(f"; {program_spec['description']}\n")
@@ -507,21 +560,25 @@ def generate_program(program_id, program_spec, config):
         generate_header(f)
 
         # Unterscheide zwischen verschiedenen Typen
-        if program_spec.get("type") == "multi_circle":
-            generate_multi_circle_pockets(f, program_spec, config)
-        elif program_spec.get("type") == "circle_with_correction":
-            generate_circle_with_correction(f, program_spec, config)
-        elif program_spec.get("type") == "circle":
-            generate_circle_pocket(f, program_spec, config)
-        elif program_spec.get("type") == "ring":
-            generate_ring_pocket(f, program_spec, config)
+        prog_type = program_spec.get("type", "").strip()
+        if prog_type == "pocket_square":
+            generate_pocket(f, normalized, config)
+        elif prog_type == "circle_pocket" or prog_type == "circle_outer" or prog_type == "circle_inner":
+            if prog_type != "circle_pocket":
+                normalized["radius_correction"] = prog_type.split("_")[1]
+            generate_circle_pocket(f, normalized, config)
+        elif prog_type == "ring_pocket":
+            generate_ring_pocket(f, normalized, config)
+        elif prog_type == "multi_circle_drill":
+            generate_multi_circle_pockets(f, normalized, config)
         else:
-            generate_pocket(f, program_spec, config)
+            generate_pocket(f, normalized, config)
 
     print(f"NC file created: {output_path}")
 
 # Main
 if __name__ == "__main__":
+    PROGRAMS = parse_spec_cnc('spec_cnc.md')
     for program_id, program_spec in PROGRAMS.items():
         generate_program(program_id, program_spec, CONFIG)
 
