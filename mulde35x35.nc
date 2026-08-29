@@ -1,6 +1,6 @@
 ; ============================================
 ; Mulde Sensor 35x35
-; Tiefe: 6mm, Fräser Durchmesser: 3.15mm
+; Tiefe: 6mm, Fraesmaschine Durchmesser: 3.15mm
 ; Generated for MACH3
 ; ============================================
 
@@ -19,13 +19,13 @@ G90                          ; Absolute positioning
 ; ============================================
 ; WERKZEUG- UND SPINDELEINSTELLUNGEN
 ; ============================================
-M6 T7                        ; Tool change: T7 (Ø3.15mm)
+M6 T7                        ; Tool change: T7 (D3.15mm)
 S4000                        ; Spindle speed: 4000 RPM
 M3                           ; Spindle ON (clockwise)
 G4 P2.0                      ; Dwell 2 seconds
 
 ; ============================================
-; POCKETFRÄSEN
+; POCKET CLEARING
 ; ============================================
 G0 Z5.0
 G0 X0.0 Y50.0

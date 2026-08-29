@@ -24,7 +24,7 @@ half_square = square_size / 2.0
 with open(output_path, 'w') as f:
     f.write("; ============================================\n")
     f.write("; Mulde Sensor 35x35\n")
-    f.write("; Tiefe: 6mm, Fräser Durchmesser: 3.15mm\n")
+    f.write("; Tiefe: 6mm, Fraesmaschine Durchmesser: 3.15mm\n")
     f.write("; Generated for MACH3\n")
     f.write("; ============================================\n\n")
 
@@ -44,14 +44,14 @@ with open(output_path, 'w') as f:
     f.write("; ============================================\n")
     f.write("; WERKZEUG- UND SPINDELEINSTELLUNGEN\n")
     f.write("; ============================================\n")
-    f.write("M6 T7                        ; Tool change: T7 (Ø3.15mm)\n")
+    f.write("M6 T7                        ; Tool change: T7 (D3.15mm)\n")
     f.write(f"S{spindle_speed}                        ; Spindle speed: {spindle_speed} RPM\n")
     f.write("M3                           ; Spindle ON (clockwise)\n")
     f.write("G4 P2.0                      ; Dwell 2 seconds\n\n")
 
     # Safe Z
     f.write("; ============================================\n")
-    f.write("; POCKETFRÄSEN\n")
+    f.write("; POCKET CLEARING\n")
     f.write("; ============================================\n")
     f.write(f"G0 Z{safety_height}\n")
     f.write(f"G0 X{quad_center_x} Y{quad_center_y}\n\n")

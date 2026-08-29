@@ -6,9 +6,10 @@ Muss kompatibel zu MACH3 CNC sein.
 
 # Allgemeine Regeln
 * Vorschub: F450 mm/min
-* Fräser Durchmesserr: 3.15mm
+* Fräser Durchmesser: 3.15mm
 * 2mm über dem Werkzeug verfahren
-* Zustellung pro Pass: 80% Überdeckung des Werkzeuges = 2.52mm
+* Zustellung pro Pass:  4mm
+* beim ausräumen 80% Überdeckung des Werkzeuges 
 * nur ascii zeichensatz verwenden
 
 ## Header am Anfang
@@ -37,8 +38,6 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwärmen)
 
 
 ## Mulde Sensor 35
-* Tasche für das abgerundete 35x35 Quadrat
-* Tasche ausräumen mit 80% überdeckung des werkzeuges
+* Referenz im dxf: mulde35x35
 * Tiefe 6mm
-* Fräser Durchmesser 3.15mm
 * Filename: `mulde35x35.nc` 

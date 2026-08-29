@@ -270,7 +270,22 @@ ARC
 180.0
 """)
 
-    # First set: 35x35mm, Radius 10mm
+    # First set: 35x35mm, Radius 10mm (id: mulde35x35)
+    # Add metadata/ID layer comment
+    f.write(f"""  0
+TEXT
+  8
+0
+ 10
+-150.0
+ 20
+-150.0
+ 40
+0.1
+  1
+ID:mulde35x35
+""")
+
     for x, y in positions:
         create_rounded_square(x, y, 35.0, 10.0)
 
