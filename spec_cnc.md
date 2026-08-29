@@ -137,8 +137,8 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 
 ### Bohrungen 4x50
 
-**Identifier:** bohrung_4x50
-**Filename:** bohrung_4x50.nc
+**Identifier:** bohrungen_4x50
+**Filename:** bohrungen_4x50.nc
 **Beschreibung:** 4 Bohrungen, Position 45°/135°/225°/315° im Abstand von 50mm vom Zentrum
 
 **Parameter:**
@@ -148,5 +148,34 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 - Abstand vom Zentrum: 50mm
 - Bohrungstiefe: 6mm
 
+---
+
+### Kreis 200 aussen
+
+**Identifier:** kreis_200_aussen
+**Filename:** kreis_200_aussen.nc
+**Beschreibung:** Kreis 200 aussen
+
+**Parameter:**
+- Anzahl 1
+- Kontur-Typ: kreis
+- Durchmesse : 200mm
+- Abstand vom Zentrum: 0mm
+- Taschentiefe: 12mm
+- Radiuskorrektur: aussen
 
 ---
+
+### Kreis 80 innen
+
+**Identifier:** kreis_80_innen
+**Filename:** kreis_80_innen.nc
+**Beschreibung:** Kreis 80 innen
+
+**Parameter:**
+- Anzahl 1
+- Kontur-Typ: kreis
+- Durchmesse : 80mm
+- Abstand vom Zentrum: 0mm
+- Taschentiefe: 12mm
+- Radiuskorrektur: innen

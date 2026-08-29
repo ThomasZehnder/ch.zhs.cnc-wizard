@@ -89,6 +89,26 @@ PROGRAMS = {
         "angles": [45, 135, 225, 315],
         "distance": 50.0,
         "depth": 6.0,
+    },
+    "kreis_200_aussen": {
+        "filename": "kreis_200_aussen.nc",
+        "description": "Kreis 200mm - Aussenkontur",
+        "num_contours": 1,
+        "type": "circle_with_correction",
+        "diameter": 200.0,
+        "center": (0, 0),
+        "depth": 12.0,
+        "radius_correction": "aussen",
+    },
+    "kreis_80_innen": {
+        "filename": "kreis_80_innen.nc",
+        "description": "Kreis 80mm - Innenkontur",
+        "num_contours": 1,
+        "type": "circle_with_correction",
+        "diameter": 80.0,
+        "center": (0, 0),
+        "depth": 12.0,
+        "radius_correction": "innen",
     }
 }
 
@@ -344,6 +364,67 @@ def generate_multi_circle_pockets(f, program, config):
     f.write("M5                           ; Spindle OFF\n")
     f.write("M30                          ; Program end\n")
 
+def generate_circle_with_correction(f, program, config):
+    """Generiert einen Kreis mit Radiuskorrektur (aussen/innen)"""
+
+    f.write("; ============================================\n")
+    f.write("; CIRCLE WITH RADIUS CORRECTION\n")
+    f.write("; ============================================\n")
+
+    diameter = program["diameter"]
+    radius = diameter / 2.0
+    depth = program["depth"]
+    center_x, center_y = program["center"]
+    tool_radius = config["tool_diameter"] / 2.0
+    radius_correction = program["radius_correction"]
+
+    # Berechne Anzahl der Passes
+    num_passes = math.ceil(depth / config["depth_per_pass"])
+
+    f.write(f"; Durchmesser: {diameter}mm, Tiefe: {depth}mm\n")
+    f.write(f"; Radiuskorrektur: {radius_correction}\n")
+    f.write(f"; Passes: {num_passes}, Zustellung: {config['depth_per_pass']}mm pro Pass\n\n")
+
+    # Für jeden Pass
+    for pass_num in range(1, num_passes + 1):
+        current_depth = pass_num * config["depth_per_pass"]
+        if current_depth > depth:
+            current_depth = depth
+
+        z_depth = -current_depth
+
+        f.write(f"; Pass {pass_num}: Z = {z_depth:.2f}mm\n")
+
+        # Rapid zu Sicherheitshoehe
+        f.write(f"G0 Z{config['safety_height']}\n")
+
+        # Startpunkt je nach Radiuskorrektur
+        if radius_correction == "aussen":
+            # Aussen: Werkzeug ist ausserhalb des Kreises
+            start_radius = radius + tool_radius
+        else:  # innen
+            # Innen: Werkzeug ist innerhalb des Kreises
+            start_radius = radius - tool_radius
+
+        f.write(f"G0 X{center_x + start_radius} Y{center_y}\n")
+
+        # Runterfahren mit Vorschub
+        f.write(f"G1 Z{z_depth:.2f} F{config['feed_rate']}\n")
+
+        # Einen Kreis fahren
+        f.write(f"G2 X{center_x + start_radius} Y{center_y} I{-start_radius} J0 F{config['feed_rate']}\n")
+
+        f.write("\n")
+
+    # Finish
+    f.write("; ============================================\n")
+    f.write("; PROGRAM ENDE\n")
+    f.write("; ============================================\n")
+    f.write(f"G0 Z{config['safety_height']}\n")
+    f.write("G0 X0 Y0\n")
+    f.write("M5                           ; Spindle OFF\n")
+    f.write("M30                          ; Program end\n")
+
 def generate_circle_pocket(f, program, config):
     """Generiert ein kreisfoermiges Taschenprogramm"""
 
@@ -428,6 +509,8 @@ def generate_program(program_id, program_spec, config):
         # Unterscheide zwischen verschiedenen Typen
         if program_spec.get("type") == "multi_circle":
             generate_multi_circle_pockets(f, program_spec, config)
+        elif program_spec.get("type") == "circle_with_correction":
+            generate_circle_with_correction(f, program_spec, config)
         elif program_spec.get("type") == "circle":
             generate_circle_pocket(f, program_spec, config)
         elif program_spec.get("type") == "ring":
