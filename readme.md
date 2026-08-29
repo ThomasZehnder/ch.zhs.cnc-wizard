@@ -20,6 +20,8 @@ generate_nc_from_spec.py       # NC-Generator (nutzt spec_parser)
 generate_dxf_from_spec.py      # DXF-Generator (nutzt spec_parser)
 format_nc_files.py             # Formatierung für numerische Genauigkeit
 generate_all.ps1               # Orchestrierungsskript
+messplatte_160P.dxf            # DXF-Zeichnung (AutoCAD R12 Format)
+messplatte_160P.svg            # SVG-Export (aus DXF mit DXF-Plugin generiert)
 ```
 
 ## Architektur
@@ -60,6 +62,16 @@ Das Skript generiert:
 ### Dateien mit a_ Präfix
 
 Dateien die mit `a_` beginnen (z.B. `a_go_home_position.nc`) werden von der Regenerierung ausgenommen und erhalten bleiben.
+
+### SVG-Export aus DXF
+
+Die DXF-Datei wird mit einem DXF-zu-SVG-Plugin (z.B. Inkscape DXF-Import oder Online-Converter) in SVG konvertiert:
+
+```
+messplatte_160P.dxf  →[DXF Plugin]→  messplatte_160P.svg
+```
+
+Das SVG kann in Webanwendungen, CAD-Software oder zur Vorschau verwendet werden.
 
 ## NC-Program-Typen
 
