@@ -1,4 +1,4 @@
-# Spezifikation fuer die CNC
+# Spezifikation fuer die CNC Messplatte IR160P
 
 ## Allgemeine Regeln (fuer alle NC-Programme)
 
