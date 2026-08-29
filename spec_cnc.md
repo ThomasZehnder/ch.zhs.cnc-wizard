@@ -58,7 +58,7 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 - Anzahl Konturen: 4
 - Kontur Groesse: 35mm
 - Eckradius: 10mm
-- Positionen: 0°, 90°, 180°, 270°
+- Positionen: 90°, 0°, 270°, 180°
 - Abstand vom Zentrum: 60mm
 - Taschentiefe: 6mm
 
@@ -75,7 +75,7 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 - Anzahl Konturen: 4
 - Kontur Groesse: 27mm
 - Eckradius: 4mm
-- Positionen: 0°, 90°, 180°, 270°
+- Positionen: 90°, 0°, 270°, 180°
 - Abstand vom Zentrum: 50mm
 - Taschentiefe: 8mm
 
