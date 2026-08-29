@@ -183,6 +183,47 @@ TEXT
 {int(diameter)}mm
 """)
 
+        # Bohrungen als Punkte
+        bohrung_programs = ['bohrung50', 'bohrung_4x50', 'bohrung_4x100', 'bohrung_zentrum']
+        for prog_id in bohrung_programs:
+            if prog_id in nc_programs:
+                prog = nc_programs[prog_id]
+                if prog.get('type') == 'circle_pocket':
+                    # Einzelne Bohrung (z.B. bohrung50)
+                    # Zeichne als Punkt im Zentrum
+                    f.write(f"""  0
+POINT
+  8
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+""")
+                elif prog.get('type') == 'multi_circle_drill':
+                    # Mehrere Bohrungen an Positionen
+                    angles = prog.get('positions', [])
+                    distance = prog.get('distance_from_center', 0)
+
+                    for angle in angles:
+                        rad = math.radians(angle)
+                        x = distance * math.cos(rad)
+                        y = distance * math.sin(rad)
+                        # Zeichne Bohrung als Punkt
+                        f.write(f"""  0
+POINT
+  8
+0
+ 10
+{x}
+ 20
+{y}
+ 30
+0.0
+""")
+
         # Mulden aus NC-Programmen
         for prog_id in ['mulde35x35', 'mulde27x27']:
             if prog_id in nc_programs:
