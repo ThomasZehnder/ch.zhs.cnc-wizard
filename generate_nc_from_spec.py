@@ -16,6 +16,18 @@ CONFIG = {
     "tool_diameter": 3.15,
 }
 
+def format_float(value):
+    """Formatiert Floats: auf 6 Dezimalstellen runden, mindestens 1 Dezimalstelle"""
+    if isinstance(value, (int, float)):
+        # Runde auf 6 Dezimalstellen
+        rounded = round(float(value), 6)
+        # Formatiere mit mindestens 1 Dezimalstelle
+        if rounded == int(rounded):
+            return f"{int(rounded)}.0"
+        else:
+            return f"{rounded:.6f}".rstrip('0')  # Entferne trailing zeros aber behalte mindestens .0
+    return str(value)
+
 def parse_spec_cnc(filename):
     """Parst die standardisierte spec_cnc.md und generiert PROGRAMS Dictionary"""
     # Mapping von Markdown-Parameternamen zu Python-Schlüsseln
