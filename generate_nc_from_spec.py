@@ -143,9 +143,10 @@ def generate_pocket(f, program, config):
             # Rapid zu Sicherheitshoehe
             f.write(f"G0 Z{config['safety_height']}\n")
 
-            # Zu Startpunkt auf der AUSSEN-Kontur fahren (Anfang der geraden Seite, vor dem Radius)
-            start_x = center_x + half_size - corner_radius
-            start_y = center_y - half_size
+            # Zu Startpunkt auf der KONTUR fahren (Werkzeugradius-korrigiert)
+            # Anfang der geraden Seite unten, mit Werkzeugradius-Offset
+            start_x = center_x + half_size - corner_radius - tool_radius
+            start_y = center_y - half_size + tool_radius
             f.write(f"G0 X{start_x} Y{start_y}\n")
 
             # Runterfahren mit Vorschub
