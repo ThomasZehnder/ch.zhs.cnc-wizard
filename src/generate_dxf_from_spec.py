@@ -8,6 +8,71 @@ import ezdxf
 from spec_parser import parse_spec_cnc, parse_dxf_spec, normalize_corner_radius
 
 
+def normalize_dxf_classes(dxf_file):
+    """Sortiert CLASS-Blöcke in fester Reihenfolge"""
+    try:
+        with open(dxf_file, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        # Extrahiere CLASS-Blöcke
+        classes = []
+        output_lines = []
+        i = 0
+        in_classes_section = False
+
+        while i < len(lines):
+            line = lines[i].rstrip('\n')
+
+            # Erkenne Anfang eines CLASS-Blocks
+            if line.strip() == '0' and i + 1 < len(lines) and lines[i + 1].strip() == 'CLASS':
+                # Extrahiere den kompletten CLASS-Block
+                block_lines = [lines[i], lines[i + 1]]
+                i += 2
+
+                # Sammle alle Zeilen bis zur nächsten "  0" Zeile
+                while i < len(lines):
+                    if lines[i].strip() == '0' and (i + 1 >= len(lines) or lines[i + 1].strip() == 'CLASS'):
+                        break
+                    block_lines.append(lines[i])
+                    i += 1
+
+                # Speichere den Block
+                block_text = ''.join(block_lines)
+                classes.append(block_text)
+                in_classes_section = True
+            else:
+                output_lines.append(lines[i])
+                i += 1
+
+        # Sortiere CLASS-Blöcke nach Klassennamen (Group Code 1)
+        def get_class_name(block_text):
+            lines_in_block = block_text.split('\n')
+            for j, line in enumerate(lines_in_block):
+                if line.strip() == '1' and j + 1 < len(lines_in_block):
+                    return lines_in_block[j + 1].strip()
+            return ''
+
+        classes.sort(key=get_class_name)
+
+        # Finde die Position, wo CLASS-Blöcke eingefügt werden (nach ENDSEC der vorherigen Section)
+        insert_pos = 0
+        for j, line in enumerate(output_lines):
+            if 'CLASSES' in line:
+                insert_pos = j + 1
+                break
+
+        # Füge sortierte CLASS-Blöcke ein
+        for class_block in classes:
+            output_lines.insert(insert_pos, class_block)
+            insert_pos += 1
+
+        # Schreibe zurück
+        with open(dxf_file, 'w', encoding='utf-8') as f:
+            f.writelines(output_lines)
+    except Exception as e:
+        print(f"Warning: Could not normalize DXF classes: {e}")
+
+
 def normalize_dxf_headers(dxf_file):
     """Standardisiert DXF-Header um Git-Diffs zu vermeiden (direkte Datei-Bearbeitung)"""
     try:
@@ -179,7 +244,8 @@ def generate_dxf(dxf_spec, nc_programs):
 
     # Speichere DXF-Datei
     doc.saveas(output_path)
-    # Normalisiere Header-Variablen
+    # Normalisiere CLASS-Blöcke und Header-Variablen
+    normalize_dxf_classes(output_path)
     normalize_dxf_headers(output_path)
     print(f"DXF file created: {output_path}")
 
