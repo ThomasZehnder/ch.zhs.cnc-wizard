@@ -9,14 +9,28 @@ from spec_parser import parse_spec_cnc, parse_dxf_spec, normalize_corner_radius
 
 
 def normalize_dxf_headers(dxf_file):
-    """Standardisiert DXF-Header um Git-Diffs zu vermeiden"""
+    """Standardisiert DXF-Header um Git-Diffs zu vermeiden (direkte Datei-Bearbeitung)"""
     try:
-        doc = ezdxf.readfile(dxf_file)
-        doc.header['$TDCREATE'] = 0.0
-        doc.header['$TDUPDATE'] = 0.0
-        doc.header['$FINGERPRINTGUID'] = '{00000000-0000-0000-0000-000000000000}'
-        doc.header['$VERSIONGUID'] = '{00000000-0000-0000-0000-000000000001}'
-        doc.saveas(dxf_file)
+        with open(dxf_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Header-Variablen zum Normalisieren
+        # Format: "  9\n$VARNAME\n 40/2\nVALUE"
+        replacements = [
+            (r'(  9\n\$TDCREATE\n 40\n)[\d.]+', r'\g<1>0.0'),
+            (r'(  9\n\$TDUCREATE\n 40\n)[\d.]+', r'\g<1>1.0'),
+            (r'(  9\n\$TDUPDATE\n 40\n)[\d.]+', r'\g<1>2.0'),
+            (r'(  9\n\$TDUUPDATE\n 40\n)[\d.]+', r'\g<1>3.0'),
+            (r'(  9\n\$FINGERPRINTGUID\n  2\n)\{[A-F0-9-]+\}', r'\g<1>{00000000-0000-0000-1234-000000000000}'),
+            (r'(  9\n\$VERSIONGUID\n  2\n)\{[A-F0-9-]+\}', r'\g<1>{00000000-0000-0000-1234-000000000001}'),
+        ]
+
+        import re
+        for pattern, replacement in replacements:
+            content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
+
+        with open(dxf_file, 'w', encoding='utf-8') as f:
+            f.write(content)
     except Exception as e:
         print(f"Warning: Could not normalize DXF headers: {e}")
 
