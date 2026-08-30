@@ -91,7 +91,6 @@ if __name__ == "__main__":
         basename = os.path.basename(dxf_file)
         print(f"Converting {basename}...")
 
-        # Versuche mit ezdxf DxfSvgProxy
         if convert_dxf_to_svg_ezdxf(dxf_file):
             success_count += 1
         else:
