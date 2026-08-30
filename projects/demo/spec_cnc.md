@@ -22,7 +22,7 @@
 
 ### Allgemeine DXF-Parameter
 
-**Filename:** messplatte_160P.dxf
+**Filename:** demo.dxf
 **Format:** AutoCAD R12 DXF
 **Einheit:** mm
 
@@ -103,7 +103,7 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 **Description:** 4 abgerundete Quadrate - Tasche ausraemen
 
 **Parameters:**
-- Anzahl Konturen: 4
+- Anzahl Konturen: 2
 - Kontur Groesse: 27mm
 - Eckradius: 4mm
 - Positionen: 0°, 90°, 180°, 270°

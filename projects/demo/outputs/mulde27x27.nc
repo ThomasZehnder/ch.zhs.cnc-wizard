@@ -27,7 +27,7 @@ G4 P2.0                      ; Dwell 2 seconds
 ; ============================================
 ; POCKET CLEARING - Kontur mit Spirale
 ; ============================================
-; Konturen: 4, Tiefe: 8mm
+; Konturen: 2, Tiefe: 8mm
 ; Passes: 2, Zustellung: 4.0mm pro Pass
 ; Spiralschritt: 2.52mm
 
