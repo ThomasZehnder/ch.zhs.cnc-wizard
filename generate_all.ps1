@@ -1,16 +1,20 @@
 # Generiert alle Dateien (NC + DXF), erhält aber Dateien die mit a_ beginnen
 
+# Cleanup alte Dateien in outputs-Verzeichnissen
+@("./projects/demo/outputs", "./projects/messplatte-ir-160-p/outputs") | ForEach-Object {
+    if (Test-Path $_) {
+        # Lösche .nc Dateien die NICHT mit a_ beginnen
+        Get-ChildItem $_ -Filter "*.nc" -File | Where-Object { -not $_.Name.StartsWith("a_") } | Remove-Item -Force
 
-# Lösche nur .nc Dateien die NICHT mit a_ beginnen
-Get-ChildItem -Filter "*.nc" -File | Where-Object { -not $_.Name.StartsWith("a_") } | Remove-Item -Force
-
-# Lösche alte DXF-Dateien die NICHT mit a_ beginnen
-Get-ChildItem -Filter "*dxf" -File | Where-Object { -not $_.Name.StartsWith("a_") } | Remove-Item -Force
+        # Lösche .dxf und .svg Dateien die NICHT mit a_ beginnen
+        Get-ChildItem $_ -Filter "*.dxf" -File | Where-Object { -not $_.Name.StartsWith("a_") } | Remove-Item -Force
+    }
+}
 
 # Generiere und formatiere NC-Dateien (Formatierung ist eingebettet)
-python generate_nc_from_spec.py "./projects/demo"
-python generate_nc_from_spec.py "./projects/messplatte-ir-160-p"
+python src/generate_nc_from_spec.py "./projects/demo"
+python src/generate_nc_from_spec.py "./projects/messplatte-ir-160-p"
 
 # Generiere DXF-Datei aus Spezifikation
-python generate_dxf_from_spec.py "./projects/demo"
-python generate_dxf_from_spec.py "./projects/messplatte-ir-160-p"
+python src/generate_dxf_from_spec.py "./projects/demo"
+python src/generate_dxf_from_spec.py "./projects/messplatte-ir-160-p"

@@ -337,13 +337,28 @@ EOF
 
 # Main
 if __name__ == "__main__":
+    import sys
+    import os
+
+    # Akzeptiere Projekt-Verzeichnis als Argument
+    project_dir = sys.argv[1] if len(sys.argv) > 1 else '.'
+    spec_file = os.path.join(project_dir, 'spec_cnc.md')
+    output_dir = os.path.join(project_dir, 'outputs')
+
+    # Erstelle outputs-Verzeichnis falls nötig
+    os.makedirs(output_dir, exist_ok=True)
+
     # Parse NC-Programme (für Mulden)
-    nc_programs = parse_spec_cnc('spec_cnc.md')
+    nc_programs = parse_spec_cnc(spec_file)
 
     # Parse DXF-Spezifikation
-    dxf_spec = parse_dxf_spec('spec_cnc.md')
+    dxf_spec = parse_dxf_spec(spec_file)
 
     if dxf_spec:
+        # Modifiziere output_path für DXF, um im output_dir zu speichern
+        original_filename = dxf_spec.get('filename', 'demo.dxf')
+        dxf_spec['filename'] = os.path.join(output_dir, original_filename)
+
         # Generiere DXF
         generate_dxf(dxf_spec, nc_programs)
         print("DXF generation complete!")

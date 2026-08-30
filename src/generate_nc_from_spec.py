@@ -59,14 +59,12 @@ def format_nc_file(filepath):
     with open(filepath, 'w') as f:
         f.write(formatted)
 
-def format_all_nc_files():
-    """Formatiert alle .nc Dateien (ausser die mit a_ Präfix)"""
-    import os
-    current_dir = os.getcwd()
-    nc_files = glob.glob(os.path.join(current_dir, '*.nc'))
+def format_all_nc_files(directory='.'):
+    """Formatiert alle .nc Dateien im Verzeichnis (ausser die mit a_ Präfix)"""
+    nc_files = glob.glob(os.path.join(directory, '*.nc'))
 
     if not nc_files:
-        print(f"Keine NC-Dateien in {current_dir} gefunden")
+        print(f"Keine NC-Dateien in {directory} gefunden")
         return
 
     for nc_file in nc_files:
@@ -76,8 +74,7 @@ def format_all_nc_files():
             format_nc_file(nc_file)
     print(f"Formatierung abgeschlossen! ({len(nc_files)} Dateien gefunden)")
 
-# Programme aus spec_cnc.md parsen
-PROGRAMS = parse_spec_cnc('spec_cnc.md')
+# Programme werden im Main-Block geparst
 
 def generate_header(f):
     """Generiert den G-Code Header"""
@@ -525,11 +522,11 @@ def generate_circle_with_correction(f, program, config):
     f.write("M5                           ; Spindle OFF\n")
     f.write("M30                          ; Program end\n")
 
-def generate_program(program_id, program_spec, config):
+def generate_program(program_id, program_spec, config, output_dir='.'):
     """Generiert ein NC-Programm"""
 
     filename = program_spec["filename"]
-    output_path = os.path.join('./', filename)
+    output_path = os.path.join(output_dir, filename)
 
     # Normalisiere Parameter für Funktionen
     normalized = program_spec.copy()
@@ -611,12 +608,22 @@ def generate_program(program_id, program_spec, config):
 
 # Main
 if __name__ == "__main__":
-    PROGRAMS = parse_spec_cnc('spec_cnc.md')
+    import sys
+
+    # Akzeptiere Projekt-Verzeichnis als Argument
+    project_dir = sys.argv[1] if len(sys.argv) > 1 else '.'
+    spec_file = os.path.join(project_dir, 'spec_cnc.md')
+    output_dir = os.path.join(project_dir, 'outputs')
+
+    # Erstelle outputs-Verzeichnis falls nötig
+    os.makedirs(output_dir, exist_ok=True)
+
+    PROGRAMS = parse_spec_cnc(spec_file)
     for program_id, program_spec in PROGRAMS.items():
-        generate_program(program_id, program_spec, CONFIG)
+        generate_program(program_id, program_spec, CONFIG, output_dir)
 
     print("\nAll NC files generated successfully!")
 
     # Formatiere automatisch alle NC-Dateien
     print("\nFormatting NC files...")
-    format_all_nc_files()
+    format_all_nc_files(output_dir)
