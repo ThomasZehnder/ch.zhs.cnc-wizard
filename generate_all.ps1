@@ -18,3 +18,7 @@ python src/generate_nc_from_spec.py "./projects/messplatte-ir-160-p"
 # Generiere DXF-Datei aus Spezifikation
 python src/generate_dxf_from_spec.py "./projects/demo"
 python src/generate_dxf_from_spec.py "./projects/messplatte-ir-160-p"
+
+# Konvertiere DXF zu SVG
+python src/convert_dxf_to_svg.py "./projects/demo"
+python src/convert_dxf_to_svg.py "./projects/messplatte-ir-160-p"
