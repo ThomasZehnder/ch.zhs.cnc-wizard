@@ -7,6 +7,19 @@ import math
 import ezdxf
 from spec_parser import parse_spec_cnc, parse_dxf_spec, normalize_corner_radius
 
+
+def normalize_dxf_headers(dxf_file):
+    """Standardisiert DXF-Header um Git-Diffs zu vermeiden"""
+    try:
+        doc = ezdxf.readfile(dxf_file)
+        doc.header['$TDCREATE'] = 0.0
+        doc.header['$TDUPDATE'] = 0.0
+        doc.header['$FINGERPRINTGUID'] = '{00000000-0000-0000-0000-000000000000}'
+        doc.header['$VERSIONGUID'] = '{00000000-0000-0000-0000-000000000001}'
+        doc.saveas(dxf_file)
+    except Exception as e:
+        print(f"Warning: Could not normalize DXF headers: {e}")
+
 def generate_dxf(dxf_spec, nc_programs):
     """Generiert DXF-Datei basierend auf Spezifikation"""
     output_path = dxf_spec.get('filename', 'messplatte_160P.dxf')
@@ -150,6 +163,8 @@ def generate_dxf(dxf_spec, nc_programs):
 
     # Speichere DXF-Datei
     doc.saveas(output_path)
+    # Normalisiere Header-Variablen
+    normalize_dxf_headers(output_path)
     print(f"DXF file created: {output_path}")
 
 # Main
