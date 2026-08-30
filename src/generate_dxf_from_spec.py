@@ -23,6 +23,8 @@ def normalize_dxf_headers(dxf_file):
             (r'(  9\n\$TDUUPDATE\n 40\n)[\d.]+', r'\g<1>3.0'),
             (r'(  9\n\$FINGERPRINTGUID\n  2\n)\{[A-F0-9-]+\}', r'\g<1>{00000000-0000-0000-1234-000000000000}'),
             (r'(  9\n\$VERSIONGUID\n  2\n)\{[A-F0-9-]+\}', r'\g<1>{00000000-0000-0000-1234-000000000001}'),
+            # DictionaryVariables mit Zeitstempel
+            (r'(DictionaryVariables\n280\n0\n  1\n)[\d.]+ @ \d{4}-\d{2}-\d{2}T[\d:.+]+', r'\g<1>1.0.0'),
         ]
 
         import re
