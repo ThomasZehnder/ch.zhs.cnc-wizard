@@ -28,6 +28,15 @@ def convert_dxf_to_svg_ezdxf(dxf_file):
         doc = ezdxf.readfile(dxf_file)
         msp = doc.modelspace()
 
+
+        # GLOBALEN PUNKT-STIL DEFINIEREN (Behebt die Sichtbarkeit)
+        doc.header['$PDMODE'] = 32   # 32 = Zeichnet einen Kreis um den Punkt (Alternative: 3 für ein 'X')
+        doc.header['$PDSIZE'] = 5.0  # Setzt den Radius/Grösse des Punkts in CAD-Einheiten (z.B. 5mm)
+
+        # FARBE ALLER PUNKTE REINIGEN/ÄNDERN
+        for point in msp.query('POINT'):
+            point.dxf.color = 1  # 1 = Rot (AutoCAD Color Index)
+
         # 2. SVGBackend aus dem korrekten Untermodul instanziieren
         backend = svg.SVGBackend()
         frontend = Frontend(RenderContext(doc), backend)
