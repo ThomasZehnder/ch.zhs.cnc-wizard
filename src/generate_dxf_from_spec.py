@@ -8,6 +8,52 @@ import ezdxf
 from spec_parser import parse_spec_cnc, parse_dxf_spec, normalize_corner_radius
 
 
+def normalize_dxf_classes(dxf_file):
+    """Sortiert LAYOUT und ACDBPLACEHOLDER CLASS-Blöcke in fester Reihenfolge"""
+    try:
+        with open(dxf_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Definiere die beiden zu suchenden Blöcke explizit
+        layout_block = 'LAYOUT\n  2\nAcDbLayout\n'
+        placeholder_block = 'ACDBPLACEHOLDER\n  2\nAcDbPlaceHolder\n'
+
+        # Finde Positionen
+        layout_pos = content.find(layout_block)
+        placeholder_pos = content.find(placeholder_block)
+
+        # Wenn beide nicht gefunden, nichts tun
+        if layout_pos == -1 or placeholder_pos == -1:
+            print("Class LAYOUT or ACDBPLACEHOLDER not found!")
+            return
+        else:
+            print(f"Positionen gefunden {layout_pos}, {placeholder_pos}")
+        
+
+        # Lösche beide Blöcke
+        content = content.replace(layout_block, '')
+        content = content.replace(placeholder_block, '')
+
+        # Berechne Längendifferenz der beiden Blöcke
+        block_diff = len(layout_block) - len(placeholder_block)
+
+        # Speichere erste Position (vor dem Löschen)
+        first_pos = min(layout_pos, placeholder_pos)
+        secound_pos = max(layout_pos, placeholder_pos) + block_diff
+
+        # Lösche beide Blöcke
+        content = content.replace(layout_block, '')
+        content = content.replace(placeholder_block, '')
+        
+        # Füge in fester Reihenfolge wieder ein: LAYOUT zuerst, dann PLACEHOLDER
+        content = content[:first_pos] + layout_block + content[first_pos:]
+        content = content[:second_pos] + placeholder_block + content[second_pos:]
+
+        with open(dxf_file, 'w', encoding='utf-8') as f:
+            f.write(content)
+    except Exception as e:
+        print(f"Warning: Could not normalize DXF classes: {e}")
+
 
 def normalize_dxf_headers(dxf_file):
     """Standardisiert DXF-Header um Git-Diffs zu vermeiden (direkte Datei-Bearbeitung)"""
@@ -182,6 +228,8 @@ def generate_dxf(dxf_spec, nc_programs):
     doc.saveas(output_path)
     # Normalisiere CLASS-Blöcke und Header-Variablen
     normalize_dxf_headers(output_path)
+    # Fixe Reihenfolge der moutierenden Klassen
+    normalize_dxf_classes(output_path)
     print(f"DXF file created: {output_path}")
 
 # Main
