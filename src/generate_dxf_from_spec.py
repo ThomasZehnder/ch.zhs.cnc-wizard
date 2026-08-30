@@ -97,8 +97,8 @@ def generate_dxf(dxf_spec, nc_programs):
     doc = ezdxf.new('R2010')
     msp = doc.modelspace()
 
-    # Kreise: 200mm, 160mm, 110mm, 50mm
-    circle_diameters = [200.0, 160.0, 110.0, 50.0]
+    # Kreise aus Spec oder Standard
+    circle_diameters = dxf_spec.get('circle_labels', {}).get('diameters', [200.0, 160.0, 110.0, 50.0])
     for diameter in circle_diameters:
         radius = diameter / 2.0
         msp.add_circle((0, 0), radius)
@@ -259,7 +259,7 @@ if __name__ == "__main__":
 
     if dxf_spec:
         # Modifiziere output_path für DXF, um im output_dir zu speichern
-        original_filename = dxf_spec.get('filename', 'messplatte_160P.dxf')
+        original_filename = dxf_spec.get('filename', 'default.dxf')
         dxf_spec['filename'] = os.path.join(output_dir, original_filename)
 
         # Generiere DXF
