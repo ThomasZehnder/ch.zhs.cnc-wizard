@@ -1,5 +1,5 @@
 # CNC Wizard Dependencies
 # DXF zu SVG Konvertierung - nutzt ezdxf mit fallback-SVG-Export
-ezdxf>=0.8.8
+ezdxf[draw]>=1.1.0
 
 # Installation: pip install -r requirements.txt
