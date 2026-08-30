@@ -29,6 +29,12 @@ def normalize_dxf_classes(dxf_file):
         else:
             print(f"Positionen gefunden {layout_pos}, {placeholder_pos}")
         
+        #wenn layout_block vor dem placeholder_block ist, muss nichts getauscht werden
+        if layout_pos < placeholder_pos:
+            print("Kein Tausch nötig...")
+            return
+        else:
+            print("Positionen tauschen")        
 
         # Lösche beide Blöcke
         content = content.replace(layout_block, '')
@@ -39,7 +45,7 @@ def normalize_dxf_classes(dxf_file):
 
         # Speichere erste Position (vor dem Löschen)
         first_pos = min(layout_pos, placeholder_pos)
-        secound_pos = max(layout_pos, placeholder_pos) + block_diff
+        second_pos = max(layout_pos, placeholder_pos) + block_diff
 
         # Lösche beide Blöcke
         content = content.replace(layout_block, '')
