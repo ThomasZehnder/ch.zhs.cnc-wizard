@@ -34,10 +34,29 @@
 **Description:** Beschriftung der Kreise mit Durchmesser
 
 **Parameters:**
-- Durchmesser: 200mm, 160mm, 110mm, 50mm
+- Durchmesser: 160mm, 110mm, 30mm
 - Abstand zum Kreis: 2mm
-- Position: 60°
-- Schriftgröße: 3mm
+- Position: -60°
+- Schriftgröße: 5mm
+
+#### Bohrungen
+
+**Type:** bohrung_programs
+**Description:** Bohrungen als Punkte im DXF
+
+**Parameters:**
+- bohrung50
+- bohrung_2x50
+- bohrung_zentrum
+
+#### Mulden
+
+**Type:** mulde_programs
+**Description:** Mulden/Taschen im DXF
+
+**Parameters:**
+- mulde35x35
+- mulde27x27
 
 #### Titel-Label
 
@@ -45,7 +64,7 @@
 **Description:** Beschriftung der Messplatte
 
 **Parameters:**
-- Text: "Messplatte IR160-P"
+- Text: "Messplatte Demo"
 - Position: 45° vom Zentrum
 - Abstand vom Zentrum: 110mm
 - Schriftgröße: 5mm
@@ -83,13 +102,13 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 **Identifier:** mulde35x35
 **Filename:** mulde35x35.nc
 **Type:** pocket_square
-**Description:** 4 abgerundete Quadrate - Tasche ausraemen
+**Description:** 2 abgerundete Quadrate - Tasche ausraemen
 
 **Parameters:**
-- Anzahl Konturen: 4
+- Anzahl Konturen: 2
 - Kontur Groesse: 35mm
-- Eckradius: 10mm
-- Positionen: 0°, 90°, 180°, 270°
+- Eckradius: 15mm
+- Positionen: 90°, 180°
 - Abstand vom Zentrum: 50mm
 - Taschentiefe: 6mm
 
@@ -100,7 +119,7 @@ G4 P2.0                      ; Dwell 2 seconds (Spindel aufwaermen)
 **Identifier:** mulde27x27
 **Filename:** mulde27ax27a.nc
 **Type:** pocket_square
-**Description:** 4 abgerundete Quadrate - Tasche ausraemen
+**Description:** 2 abgerundete Quadrate - Tasche ausraemen
 
 **Parameters:**
 - Anzahl Konturen: 2

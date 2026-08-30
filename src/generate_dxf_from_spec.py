@@ -91,14 +91,14 @@ def normalize_dxf_headers(dxf_file):
 
 def generate_dxf(dxf_spec, nc_programs):
     """Generiert DXF-Datei basierend auf Spezifikation"""
-    output_path = dxf_spec.get('filename', 'messplatte_160P.dxf')
+    output_path = dxf_spec.get('filename', 'default.dxf')
 
     # Erstelle DXF-Dokument
     doc = ezdxf.new('R2010')
     msp = doc.modelspace()
 
-    # Kreise aus Spec oder Standard
-    circle_diameters = dxf_spec.get('circle_labels', {}).get('diameters', [200.0, 160.0, 110.0, 50.0])
+    # Kreise aus Spec
+    circle_diameters = dxf_spec['circle_labels']['diameters']
     for diameter in circle_diameters:
         radius = diameter / 2.0
         msp.add_circle((0, 0), radius)
@@ -106,7 +106,7 @@ def generate_dxf(dxf_spec, nc_programs):
     # Kreis-Labels
     if 'circle_labels' in dxf_spec:
         labels = dxf_spec['circle_labels']
-        diameters = labels.get('diameters', circle_diameters)
+        diameters = labels['diameters']
         distance = labels.get('distance', 2.0)
         position_deg = labels.get('position', 60)
         fontsize = labels.get('fontsize', 3.0)
@@ -123,7 +123,7 @@ def generate_dxf(dxf_spec, nc_programs):
             })
 
     # Bohrungen als Punkte
-    bohrung_programs = ['bohrung50', 'bohrung_4x50', 'bohrung_4x100', 'bohrung_zentrum']
+    bohrung_programs = dxf_spec.get('bohrung_programs', [])
     for prog_id in bohrung_programs:
         if prog_id in nc_programs:
             prog = nc_programs[prog_id]
@@ -142,7 +142,8 @@ def generate_dxf(dxf_spec, nc_programs):
                     msp.add_point((x, y))
 
     # Mulden aus NC-Programmen
-    for prog_id in ['mulde35x35', 'mulde27x27']:
+    mulde_programs = dxf_spec.get('mulde_programs', [])
+    for prog_id in mulde_programs:
         if prog_id in nc_programs:
             prog = nc_programs[prog_id]
             if prog.get('type') == 'pocket_square':

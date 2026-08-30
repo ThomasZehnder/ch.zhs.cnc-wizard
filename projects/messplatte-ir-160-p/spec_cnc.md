@@ -39,6 +39,26 @@
 - Position: 60°
 - Schriftgröße: 3mm
 
+#### Bohrungen
+
+**Type:** bohrung_programs
+**Description:** Bohrungen als Punkte im DXF
+
+**Parameters:**
+- bohrung50
+- bohrung_4x50
+- bohrung_4x100
+- bohrung_zentrum
+
+#### Mulden
+
+**Type:** mulde_programs
+**Description:** Mulden/Taschen im DXF
+
+**Parameters:**
+- mulde35x35
+- mulde27x27
+
 #### Titel-Label
 
 **Type:** title

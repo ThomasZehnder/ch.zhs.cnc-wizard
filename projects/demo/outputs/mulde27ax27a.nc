@@ -1,5 +1,5 @@
 ; ============================================
-; 4 abgerundete Quadrate - Tasche ausraemen
+; 2 abgerundete Quadrate - Tasche ausraemen
 ; ID: mulde27x27
 ; Generated for MACH3
 ; ============================================

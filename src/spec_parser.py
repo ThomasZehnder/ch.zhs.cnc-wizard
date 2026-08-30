@@ -172,6 +172,36 @@ def parse_dxf_spec(filename):
         if fontsize_match:
             dxf_spec['circle_labels']['fontsize'] = float(fontsize_match.group(1))
 
+    # Bohrungen
+    bohrung_section = re.search(r'#### Bohrungen(.*?)(?:####|$)', dxf_text, re.DOTALL)
+    if bohrung_section:
+        section = bohrung_section.group(1)
+        bohrung_programs = []
+        # Extrahiere alle Zeilen, die mit "- " beginnen
+        for line in section.split('\n'):
+            line = line.strip()
+            if line.startswith('- ') and not line.startswith('- '):
+                continue
+            if line.startswith('- '):
+                prog_id = line[2:].strip()
+                bohrung_programs.append(prog_id)
+        if bohrung_programs:
+            dxf_spec['bohrung_programs'] = bohrung_programs
+
+    # Mulden
+    mulde_section = re.search(r'#### Mulden(.*?)(?:####|$)', dxf_text, re.DOTALL)
+    if mulde_section:
+        section = mulde_section.group(1)
+        mulde_programs = []
+        # Extrahiere alle Zeilen, die mit "- " beginnen
+        for line in section.split('\n'):
+            line = line.strip()
+            if line.startswith('- '):
+                prog_id = line[2:].strip()
+                mulde_programs.append(prog_id)
+        if mulde_programs:
+            dxf_spec['mulde_programs'] = mulde_programs
+
     # Titel
     title_section = re.search(r'#### Titel-Label(.*?)(?:####|$)', dxf_text, re.DOTALL)
     if title_section:
