@@ -8,7 +8,9 @@ Get-ChildItem -Filter "*.nc" -File | Where-Object { -not $_.Name.StartsWith("a_"
 Get-ChildItem -Filter "*dxf" -File | Where-Object { -not $_.Name.StartsWith("a_") } | Remove-Item -Force
 
 # Generiere und formatiere NC-Dateien (Formatierung ist eingebettet)
-python generate_nc_from_spec.py
+python generate_nc_from_spec.py "./projects/demo"
+python generate_nc_from_spec.py "./projects/messplatte-ir-160-p"
 
 # Generiere DXF-Datei aus Spezifikation
-python generate_dxf_from_spec.py
+python generate_dxf_from_spec.py "./projects/demo"
+python generate_dxf_from_spec.py "./projects/messplatte-ir-160-p"
