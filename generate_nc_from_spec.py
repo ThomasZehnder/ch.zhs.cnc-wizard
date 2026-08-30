@@ -7,6 +7,7 @@ Formatiert automatisch am Ende
 import math
 import re
 import glob
+import os
 from spec_parser import parse_spec_cnc, normalize_corner_radius
 
 # Konfiguration (geparst aus spec_cnc.md)
@@ -528,7 +529,7 @@ def generate_program(program_id, program_spec, config):
     """Generiert ein NC-Programm"""
 
     filename = program_spec["filename"]
-    output_path = f'd:\\Arduino\\force-sensor\\messplatte-ir-160-p\\{filename}'
+    output_path = os.path.join('./', filename)
 
     # Normalisiere Parameter für Funktionen
     normalized = program_spec.copy()
